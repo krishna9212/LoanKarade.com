@@ -1,5 +1,5 @@
 import img from "./../assets/Login.jpg";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { auth, provider } from "./FireBase";
 import AlertMessage from "./Alert";
@@ -16,6 +16,15 @@ function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [alert, setAlert] = useState(null);
+  const [user, setUser] = useState(null);
+
+  // Check localStorage for user data on page load
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   // Function to store user data in local storage
   const storeUserData = (user) => {
@@ -26,6 +35,7 @@ function Signup() {
       photoURL: user.photoURL || "",
     };
     localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData); // Update state
   };
 
   // Google Sign-in
@@ -34,6 +44,7 @@ function Signup() {
       const result = await signInWithPopup(auth, provider);
       storeUserData(result.user);
       setAlert({ message: "Google sign-in successful!", type: "success" });
+      window.location.reload()
     } catch (error) {
       setAlert({ message: error.message, type: "error" });
     }
@@ -46,6 +57,7 @@ function Signup() {
       const result = await signInWithEmailAndPassword(auth, email, password);
       storeUserData(result.user);
       setAlert({ message: "Login successful!", type: "success" });
+      window.location.reload()
     } catch (error) {
       setAlert({ message: error.message, type: "error" });
     }
@@ -89,87 +101,97 @@ function Signup() {
       </div>
 
       {/* Left side Image (for larger screens) */}
-      <div className="hidden md:block md:h-[75%] md:w-1/2">
-        <img src={img} alt="Login" className="w-full h-full object-cover rounded-lg" />
-      </div>
+      {!user && (
+        <div className="hidden md:block md:h-[75%] md:w-1/2">
+          <img src={img} alt="Login" className="w-full h-full object-cover rounded-lg" />
+        </div>
+      )}
 
-      {/* Right side Form */}
-      <div className="w-full md:w-1/2 lg:w-2/5 p-8 bg-white rounded-lg">
-        <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">
-          {isSignUp ? "Sign Up" : "Login"}
-        </h2>
-
-        <form onSubmit={isSignUp ? handleSignUp : handleEmailSignIn}>
-          {/* Email */}
-          <div className="mb-2">
-            <label className="block text-gray-700">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              required
-            />
-          </div>
-
-          {/* Password */}
-          <div className="mb-2">
-            <label className="block text-gray-700">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              required
-            />
-          </div>
-
-          {/* Confirm Password (Only for Signup) */}
-          {isSignUp && (
+      {/* Show White Box if User is Logged In */}
+      {user ? (
+        <div className="w-full md:w-1/2 lg:w-2/5 p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 text-center">Welcome, {user.displayName}!</h2>
+          <p className="text-center text-gray-500 dark:text-gray-300 mt-2">{user.email}</p>
+        </div>
+      ) : (
+        // Show Login/Signup Box if No User
+        <div className="w-full md:w-1/2 lg:w-2/5 p-8 bg-white dark:bg-gray-900 rounded-lg">
+          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 text-center mb-6">
+            {isSignUp ? "Sign Up" : "Login"}
+          </h2>
+          
+          <form onSubmit={isSignUp ? handleSignUp : handleEmailSignIn}>
+            {/* Email */}
             <div className="mb-2">
-              <label className="block text-gray-700">Confirm Password</label>
+              <label className="block text-gray-700 dark:text-gray-300">Email</label>
               <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
                 required
               />
             </div>
-          )}
-
-          {/* Submit Button */}
+            
+            {/* Password */}
+            <div className="mb-2">
+              <label className="block text-gray-700 dark:text-gray-300">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+                required
+              />
+            </div>
+            
+            {/* Confirm Password (Only for Signup) */}
+            {isSignUp && (
+              <div className="mb-2">
+                <label className="block text-gray-700 dark:text-gray-300">Confirm Password</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+                  required
+                />
+              </div>
+            )}
+            
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full p-3 mt-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition duration-300"
+            >
+              {isSignUp ? "Sign Up" : "Login"}
+            </button>
+          </form>
+          
+          {/* Google Sign-in */}
           <button
-            type="submit"
-            className="w-full p-3 mt-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition duration-300"
+            onClick={handleGoogleSignIn}
+            className="w-full flex items-center justify-center p-3 mt-4 border rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-300"
           >
-            {isSignUp ? "Sign Up" : "Login"}
+            <FaGoogle className="mr-2 text-red-500" /> Sign in with Google
           </button>
-        </form>
-
-        {/* Google Sign-in */}
-        <button
-          onClick={handleGoogleSignIn}
-          className="w-full flex items-center justify-center p-3 mt-4 border rounded-lg bg-white hover:bg-gray-100 transition duration-300"
-        >
-          <FaGoogle className="mr-2 text-red-500" /> Sign in with Google
-        </button>
-
-        {/* Forgot Password */}
-        {!isSignUp && (
-          <p className="text-center mt-2 text-sm text-blue-500 cursor-pointer hover:underline" onClick={handleForgotPassword}>
-            Forgot Password?
+          
+          {/* Forgot Password */}
+          {!isSignUp && (
+            <p className="text-center mt-2 text-sm text-blue-500 cursor-pointer hover:underline" onClick={handleForgotPassword}>
+              Forgot Password?
+            </p>
+          )}
+          
+          {/* Toggle between Login & SignUp */}
+          <p className="text-center mt-4 text-sm text-gray-600 dark:text-gray-300">
+            {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+            <span onClick={() => setIsSignUp(!isSignUp)} className="text-blue-500 cursor-pointer hover:underline">
+              {isSignUp ? "Login" : "Sign Up"}
+            </span>
           </p>
-        )}
-
-        {/* Toggle between Login & SignUp */}
-        <p className="text-center mt-4 text-sm">
-          {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
-          <span onClick={() => setIsSignUp(!isSignUp)} className="text-blue-500 cursor-pointer hover:underline">
-            {isSignUp ? "Login" : "Sign Up"}
-          </span>
-        </p>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
