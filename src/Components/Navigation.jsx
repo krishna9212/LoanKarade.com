@@ -3,12 +3,13 @@ import { FaSun, FaMoon } from 'react-icons/fa';
 import logo from './../assets/MainLogo.png';
 import Signup from './Signup';
 import AlertMessage from "./Alert";
-
+import UserProfile from "./UserProfile"
 function Navigation() {
   const [darkMode, setDarkMode] = useState(false);
   const [showModal, setShowModal] = useState(false); // For modal visibility
   const [user, setUser] = useState(null);
   const [alert, setAlert] = useState(null);
+  const [ShowUser,setShowUser] =useState(false)
 
   // Check localStorage for user data on page load
   useEffect(() => {
@@ -25,12 +26,7 @@ function Navigation() {
   }, [darkMode]);
 
   // Log out function
-  const handleLogout = () => {
-    localStorage.removeItem('user'); // Remove user from localStorage
-    setUser(null); // Clear user state
-    setAlert({ message: "logged out successfully", type: "success" });
-    window.location.reload();
-  };
+  
 
   return (<>
     <nav className="h-[10%] w-full flex items-center justify-between bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 px-4 md:px-10 shadow-md">
@@ -61,15 +57,34 @@ function Navigation() {
           >
             Sign Up
           </button>
-        ) : (
-          <button
-          onClick={handleLogout}
-          className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-all text-sm md:text-base font-medium"
-          >
-            Log Out
-          </button>
+        ) : (<button
+          className="px-[8px] py-[9px] rounded-md bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all flex items-center justify-center text-[1.2rem]"
+          onClick={(e) => setShowUser(true)}
+        >
+          <i className="fas fa-user"></i> 
+          
+        </button>
+        
+          
+          
+          
+          
         )}
       </div>
+
+      {ShowUser && (
+        <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 backdrop-blur-xs z-10 pointer-events-auto">
+          <div className="w-min-[95%] md:w-min-[60%] rounded-xl overflow-hidden h-[55%] md:h-[65%]    bg-gray-100 dark:bg-gray-800  relative">
+            <UserProfile></UserProfile>
+            <button
+              onClick={() => setShowUser(false)}
+              className="absolute top-4 right-6 text-gray-800 dark:text-white text-3xl font-semibold "
+              >
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modal for Signup / Sign-in */}
       {showModal && (

@@ -1,0 +1,199 @@
+import React, { useEffect, useState } from "react";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import male from "./../assets/male.png";
+import female from "./../assets/female.png";
+import other from "./../assets/other.png";
+import AlertMessage from "./Alert";
+
+function UserProfile() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [uid, setUid] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", address: "", gender: "" });
+  const [alert, setAlert] = useState(null); // Added the alert state
+  const [darkMode, setDarkMode] = useState(true); // Add state for dark mode toggle
+
+  const avatars = { male, female, other };
+
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        setUid(parsedUser.uid || null);
+      }
+    } catch (error) {
+      console.error("Error parsing localStorage user:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!uid) {
+        console.warn("No UID found in localStorage.");
+        setLoading(false);
+        return;
+      }
+      try {
+        const db = getFirestore();
+        const userRef = doc(db, "users", uid);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+          setUser(userSnap.data());
+          setFormData(userSnap.data());
+        } else {
+          console.warn("User not found in Firestore.");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (uid) {
+      fetchUserData();
+    }
+  }, [uid]);
+
+  const handleEdit = () => setIsEditing(true);
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleSave = async () => {
+    try {
+      const db = getFirestore();
+      const userRef = doc(db, "users", uid);
+      await updateDoc(userRef, formData);
+      
+      // Update the user state with the new formData
+      setUser(formData);
+      setIsEditing(false);
+  
+      // Save the updated user data in localStorage for faster loading
+      localStorage.setItem("user", JSON.stringify({ ...formData, uid }));
+  
+      setAlert({ message: "Profile updated successfully!", type: "success" });
+    
+    } catch (error) {
+      console.error("Error updating user data:", error);
+      setAlert({ message: "Failed to update profile.", type: "error" });
+    }
+  };
+  
+  const handleLogout = () => {
+    localStorage.removeItem('user'); // Remove user from localStorage
+    setUser(null); // Clear user state
+    setAlert({ message: "logged out successfully", type: "success" });
+    window.location.reload();
+  };
+
+  return (
+    <div className={`flex justify-center items-center h-96 w-96 ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-800"} ${isEditing ? "-mt-5" : "mt-10"}`}>
+      {loading ? (
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-blue-500"></div>
+      ) : user ? (
+        <div className={`relative w-96 ${darkMode ? "bg-gray-800" : "bg-gray-100"} rounded-lg p-6`}>
+          {/* Floating Avatar */}
+          <div className="absolute left-1/2 -top-12 transform -translate-x-1/2">
+            <img
+              src={avatars[user.gender] || avatars.other} // Use user.gender for avatar
+              alt="Avatar"
+              className={`w-24 h-24 rounded-full border-4 border-white transition-opacity ${isEditing ? "hidden" : "opacity-100"}`}
+            />
+          </div>
+
+          {/* Profile Details */}
+          <div className="mt-10 text-center">
+            <h1 className="text-2xl font-semibold">User Profile</h1>
+            <div className={`text-left space-y-2 ${isEditing ? "-mb-20" : "mt-4"}`}>
+              {isEditing ? (
+                <>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Name"
+                    className="w-full p-2 mt-4 rounded border-[0.2px] outline-none border-gray-300"
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full p-2 rounded border-[0.2px] outline-none border-gray-300"
+                    placeholder="Email"
+                  />
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    maxLength={10}
+                    minLength={10}
+                    className="w-full p-2 rounded border-[0.2px] outline-none border-gray-300"
+                    placeholder="Phone"
+                  />
+                  <input
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    className="w-full p-2 rounded border-[0.2px] outline-none border-gray-300"
+                    placeholder="Address"
+                  />
+                  <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    className="w-full p-2 rounded border-[0.2px] outline-none border-gray-300"
+                  >
+                    <option value="other">Other</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                  <button onClick={handleSave} className="text-gray-100 border-[0.4px] bg-blue-600 border-blue-300 px-4 md:py-2 py-3 rounded-xl w-full hover:bg-blue-500 transition-all duration-700 text-sm md:text-base font-semibold">
+                    Save
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p><strong>Name:</strong> {user.name || "N/A"}</p>
+                  <p><strong>Email:</strong> {user.email || "N/A"}</p>
+                  <p><strong>Phone:</strong> {user.phone || "N/A"}</p>
+                  <p><strong>Address:</strong> {user.address || "N/A"}</p>
+                  <p><strong>Gender:</strong> {user.gender || "N/A"}</p>
+
+                  <div className={`flex h-full w-full justify-between items-center gap-1 -mb-12 pt-4 ${isEditing ? "-mb-0 pt-0" : "-mb-12 pt-4"}`}>
+                    <button
+                      onClick={handleLogout}
+                      className="bg-black text-white border-gray-700 px-4 md:py-2 py-3 w-1/2 border-[0.4px] rounded-xl  transition-all duration-700 text-sm md:text-base font-semibold"
+                    >
+                      Log Out
+                    </button>
+                    <button
+                      onClick={handleEdit}
+                      className="text-gray-100 border-[0.4px] border-gray-700 px-4 md:py-2 py-3 rounded-xl w-1/2  transition-all duration-700 text-sm md:text-base font-semibold"
+                    >
+                      Edit Profile
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <p className="text-red-500">User not found.</p>
+      )}
+      
+      <div className="alert text-lg font-light">
+        {alert && <AlertMessage message={alert.message} type={alert.type} onClose={() => setAlert(null)} />}
+      </div>
+    </div>
+  );
+}
+
+export default UserProfile;
