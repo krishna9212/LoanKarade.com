@@ -29,7 +29,7 @@ function Navigation() {
     localStorage.removeItem('user'); // Remove user from localStorage
     setUser(null); // Clear user state
     setAlert({ message: "logged out successfully", type: "success" });
-    
+    window.location.reload();
   };
 
   return (<>
@@ -74,7 +74,7 @@ function Navigation() {
       {/* Modal for Signup / Sign-in */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 backdrop-blur-xs z-10 pointer-events-auto">
-          <div className="w-[95%] md:w-[60%] rounded-xl overflow-hidden h-[70%] md:h-[76%] bg-white dark:bg-gray-800 shadow-lg relative">
+          <div className="w-[95%] md:w-[60%] rounded-xl overflow-hidden h-[50%] md:h-[76%] bg-white dark:bg-gray-800 shadow-lg relative">
             <Signup />
             <button
               onClick={() => setShowModal(false)}

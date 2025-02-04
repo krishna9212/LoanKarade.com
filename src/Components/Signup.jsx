@@ -8,6 +8,7 @@ import { signInWithPopup, signInWithPhoneNumber, RecaptchaVerifier } from "fireb
 function Signup() {
   const [user, setUser] = useState(null);
   const [alert, setAlert] = useState(null);
+  const [country, setCountry] = useState("+91");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(null);
@@ -19,8 +20,8 @@ function Signup() {
     }
   }, []);
 
-  // Initialize reCAPTCHA properly
-  const setupRecaptcha = () => {
+  useEffect(() => {
+    // Initialize reCAPTCHA on component mount
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
         size: "invisible",
@@ -30,9 +31,11 @@ function Signup() {
         "expired-callback": () => {
           console.log("reCAPTCHA expired. Refreshing...");
         },
+        // badge: "inline", // Moves the reCAPTCHA badge inline
       });
     }
-  };
+  }, []);
+  
 
   const storeUserData = (user) => {
     const userData = {
@@ -46,12 +49,16 @@ function Signup() {
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
-    setupRecaptcha(); // Ensure reCAPTCHA is initialized
 
-    const appVerifier = window.recaptchaVerifier;
+    if (phoneNumber.length < 10) {
+      setAlert({ message: "Enter a valid 10-digit phone number", type: "error" });
+      return;
+    }
 
     try {
-      const confirmation = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+      const fullPhoneNumber = country + phoneNumber;
+      const appVerifier = window.recaptchaVerifier;
+      const confirmation = await signInWithPhoneNumber(auth, fullPhoneNumber, appVerifier);
       setConfirmationResult(confirmation);
       setAlert({ message: "OTP sent successfully!", type: "success" });
     } catch (error) {
@@ -70,8 +77,10 @@ function Signup() {
       const result = await confirmationResult.confirm(otp);
       setAlert({ message: "OTP verified successfully!", type: "success" });
       storeUserData(result.user);
+      setUser(false)
+      window.location.reload();
     } catch (error) {
-      setAlert({ message: error.message, type: "error" });
+      setAlert({ message: "Invalid OTP. Please try again.", type: "error" });
     }
   };
 
@@ -80,14 +89,16 @@ function Signup() {
       const result = await signInWithPopup(auth, provider);
       storeUserData(result.user);
       setAlert({ message: "Google sign-in successful!", type: "success" });
+      setUser(false)
       window.location.reload();
+
     } catch (error) {
       setAlert({ message: error.message, type: "error" });
     }
   };
 
   return (
-    <div className="h-[100vh] w-full flex flex-col  md:flex-row items-center justify-center dark:bg-gray-900">
+    <div className="h-[100vh] w-full flex flex-col md:flex-row items-center justify-center dark:bg-gray-900">
       {alert && (
         <div className="absolute top-5 w-full flex justify-center">
           <AlertMessage message={alert.message} type={alert.type} onClose={() => setAlert(null)} />
@@ -95,58 +106,78 @@ function Signup() {
       )}
 
       {!user && (
-        <div className="hidden md:block md:h-[55%] mb-[11rem] md:w-[40%]">
+        <div className="hidden md:block md:h-[60%] mb-[11rem] md:w-[40%]">
           <img src={img} alt="Login" className="w-full h-full object-cover rounded-lg" />
         </div>
       )}
 
       {user ? (
-        <div className="w-full md:w-[50%] p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+        <div className="w-full md:w-[50%] p-8  bg-white dark:bg-gray-800 rounded-lg shadow-lg">
           <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 text-center">
             Welcome, {user.displayName}!
           </h2>
           <p className="text-center text-gray-500 dark:text-gray-300 mt-2">{user.phoneNumber}</p>
         </div>
+
       ) : (
-        <div className="w-full md:w-[50%] flex flex-col h-[88%] p-8 dark:bg-gray-900 rounded-lg">
+        <div className="w-full md:w-[50%] flex flex-col h-[94%] p-8 dark:bg-gray-900 rounded-lg">
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 text-center mb-4">
             Login to your account
           </h2>
           <button
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center p-3 border rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-300"
+            className="w-full flex items-center  justify-center p-3 border dark:border-black rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-300"
           >
             <FaGoogle className="mr-2 text-red-500" /> Continue with Google
           </button>
-          <form onSubmit={confirmationResult ? handleVerifyOtp : handleSendOtp} className="pt-5">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Phone Number
-            </label>
-            <input
-              type="tel"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="+1234567890"
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white shadow-sm"
-              required
-            />
-            {confirmationResult && (
-              <input
-                type="text"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                placeholder="Enter OTP"
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white shadow-sm mt-4"
-                required
-              />
-            )}
-            <button
-              type="submit"
-              className="w-full p-3 mt-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition duration-300 shadow-md"
-            >
-              {confirmationResult ? "Verify OTP" : "Login with OTP"}
-            </button>
-          </form>
+
+          <form onSubmit={confirmationResult ? handleVerifyOtp : handleSendOtp} className="pt-10">
+  {!confirmationResult ? (
+    // Phone Number Input - Visible only before OTP is sent
+    <div>
+      <div className="flex items-center space-x-2">
+        <img src="https://flagcdn.com/w40/in.png" alt="India Flag" className="w-6 h-4" />
+        <p className="text-gray-700 dark:text-gray-300">{country}</p>
+        <input
+          type="tel"
+          value={phoneNumber}
+          onChange={(e) => {
+            const inputValue = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+            setPhoneNumber(inputValue);
+          }}
+          placeholder="Mobile Number"
+          minLength={10}
+          maxLength={10}
+          className="w-full p-3 rounded-lg focus:outline-none dark:bg-transparent dark:text-gray-200"
+          required
+        />
+      </div>
+    </div>
+  ) : (
+    // OTP Input - Visible only after OTP is sent successfully
+    <input
+    type="tel"
+    value={otp}
+    onChange={(e) => {const inputValue = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+      setOtp(inputValue);
+    }}
+    minLength={6}
+    maxLength={6}
+    placeholder="Enter OTP"
+    className="w-full p-3 rounded-lg focus:outline-none dark:bg-gray-700 dark:text-white"
+    required
+    />
+  )}
+  <div className="line h-[0.1px] w-full bg-gray-300 mt-2"></div>
+
+  <button
+    type="submit"
+    className="w-full p-3 mt-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition duration-300 shadow-md"
+  >
+    {confirmationResult ? "Verify OTP" : "Login with OTP"}
+  </button>
+</form>
+
         </div>
       )}
       <div id="recaptcha-container"></div>
