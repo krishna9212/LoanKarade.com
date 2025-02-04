@@ -74,16 +74,17 @@ function Navigation() {
 
       {ShowUser && (
         <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 backdrop-blur-xs z-10 pointer-events-auto">
-          <div className="w-min-[95%] md:w-min-[60%] rounded-xl overflow-hidden h-[55%] md:h-[65%]    bg-gray-100 dark:bg-gray-800  relative">
-            <UserProfile></UserProfile>
-            <button
-              onClick={() => setShowUser(false)}
-              className="absolute top-4 right-6 text-gray-800 dark:text-white text-3xl font-semibold "
-              >
-              &times;
-            </button>
-          </div>
+        <div className="w-min-[95%] md:w-min-[60%] rounded-xl overflow-hidden h-[55%] md:h-[65%] bg-gray-100 dark:bg-gray-800 relative">
+          <UserProfile></UserProfile>
+          <button
+            onClick={() => setShowUser(false)}
+            className="absolute top-4 right-6 text-gray-800 dark:text-white text-3xl font-semibold"
+          >
+            &times;
+          </button>
         </div>
+      </div>
+      
       )}
 
       {/* Modal for Signup / Sign-in */}

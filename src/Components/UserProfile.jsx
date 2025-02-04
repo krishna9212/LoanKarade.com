@@ -12,7 +12,6 @@ function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", address: "", gender: "" });
   const [alert, setAlert] = useState(null); // Added the alert state
-  const [darkMode, setDarkMode] = useState(true); // Add state for dark mode toggle
 
   const avatars = { male, female, other };
 
@@ -81,20 +80,18 @@ function UserProfile() {
       setAlert({ message: "Failed to update profile.", type: "error" });
     }
   };
-  
   const handleLogout = () => {
     localStorage.removeItem('user'); // Remove user from localStorage
     setUser(null); // Clear user state
     setAlert({ message: "logged out successfully", type: "success" });
     window.location.reload();
   };
-
   return (
-    <div className={`flex justify-center items-center h-96 w-96 ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-800"} ${isEditing ? "-mt-5" : "mt-10"}`}>
+    <div className={`flex justify-center items-center h-96 w-96  text-black dark:bg-gray-800  dark:text-white bg-gray-100 ${isEditing ? "-mt-5" : "mt-10"}`}>
       {loading ? (
         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-blue-500"></div>
       ) : user ? (
-        <div className={`relative w-96 ${darkMode ? "bg-gray-800" : "bg-gray-100"} rounded-lg p-6`}>
+        <div className="relative w-96 bg-gray-100 text-black dark:bg-gray-800  dark:text-white rounded-lg p-6">
           {/* Floating Avatar */}
           <div className="absolute left-1/2 -top-12 transform -translate-x-1/2">
             <img
@@ -106,8 +103,8 @@ function UserProfile() {
 
           {/* Profile Details */}
           <div className="mt-10 text-center">
-            <h1 className="text-2xl font-semibold">User Profile</h1>
-            <div className={`text-left space-y-2 ${isEditing ? "-mb-20" : "mt-4"}`}>
+            <h1 className="text-2xl font-semibold  text-black dark:bg-gray-800  dark:text-white">User Profile</h1>
+            <div className={` text-left space-y-2 ${isEditing ? "-mb-20" : "mt-4"}`}>
               {isEditing ? (
                 <>
                   <input
@@ -116,14 +113,14 @@ function UserProfile() {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Name"
-                    className="w-full p-2 mt-4 rounded border-[0.2px] outline-none border-gray-300"
+                    className="w-full p-2 mt-4 rounded border-[0.2px] outline-none border-gray-300 dark:border-gray-600 dark:border-gray-600"
                   />
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full p-2 rounded border-[0.2px] outline-none border-gray-300"
+                    className="w-full p-2 rounded border-[0.2px] outline-none border-gray-300 dark:border-gray-600"
                     placeholder="Email"
                   />
                   <input
@@ -133,7 +130,7 @@ function UserProfile() {
                     onChange={handleChange}
                     maxLength={10}
                     minLength={10}
-                    className="w-full p-2 rounded border-[0.2px] outline-none border-gray-300"
+                    className="w-full p-2 rounded border-[0.2px] outline-none border-gray-300 dark:border-gray-600"
                     placeholder="Phone"
                   />
                   <input
@@ -141,20 +138,20 @@ function UserProfile() {
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
-                    className="w-full p-2 rounded border-[0.2px] outline-none border-gray-300"
+                    className="w-full p-2 rounded border-[0.2px] outline-none border-gray-300 dark:border-gray-600"
                     placeholder="Address"
                   />
                   <select
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className="w-full p-2 rounded border-[0.2px] outline-none border-gray-300"
+                    className="w-full p-2 rounded border-[0.2px] outline-none border-gray-300 dark:border-gray-600"
                   >
                     <option value="other">Other</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                   </select>
-                  <button onClick={handleSave} className="text-gray-100 border-[0.4px] bg-blue-600 border-blue-300 px-4 md:py-2 py-3 rounded-xl w-full hover:bg-blue-500 transition-all duration-700 text-sm md:text-base font-semibold">
+                  <button onClick={handleSave} className="text-gray-100 outline-none  bg-blue-600  px-4 md:py-2 py-3 rounded-xl w-full hover:bg-blue-700 transition-all duration-700 text-sm md:text-base font-semibold  transform ">
                     Save
                   </button>
                 </>
@@ -165,21 +162,26 @@ function UserProfile() {
                   <p><strong>Phone:</strong> {user.phone || "N/A"}</p>
                   <p><strong>Address:</strong> {user.address || "N/A"}</p>
                   <p><strong>Gender:</strong> {user.gender || "N/A"}</p>
+                  
+                  
+    <div className={`flex h-full w-full justify-between items-center gap-1 -mb-12  pt-4 ${isEditing ? "-mb-0  pt-0" : "-mb-12  pt-4"}`}>
 
-                  <div className={`flex h-full w-full justify-between items-center gap-1 -mb-12 pt-4 ${isEditing ? "-mb-0 pt-0" : "-mb-12 pt-4"}`}>
-                    <button
-                      onClick={handleLogout}
-                      className="bg-black text-white border-gray-700 px-4 md:py-2 py-3 w-1/2 border-[0.4px] rounded-xl  transition-all duration-700 text-sm md:text-base font-semibold"
-                    >
-                      Log Out
-                    </button>
-                    <button
-                      onClick={handleEdit}
-                      className="text-gray-100 border-[0.4px] border-gray-700 px-4 md:py-2 py-3 rounded-xl w-1/2  transition-all duration-700 text-sm md:text-base font-semibold"
-                    >
-                      Edit Profile
-                    </button>
-                  </div>
+  <button
+    onClick={handleLogout}
+    className="bg-red-600    dark:hover:bg-red-700 text-white px-4 md:py-2 py-3 w-1/2 border-[0.4px] rounded-xl hover:bg-red-500 transition-all duration-700 text-sm md:text-base font-semibold  transform "
+  >
+    Log Out
+  </button>
+
+ 
+  <button
+    onClick={handleEdit}
+    className=" text-gray-700 border-[0.4px] border-gray-300 dark:text-gray-200 px-4 md:py-2 py-3 rounded-xl w-1/2 hover:bg-gray-200  dark:hover:bg-gray-900 transition-all duration-700 text-sm md:text-base font-semibold  transform "
+  >
+    Edit Profile
+  </button>
+</div>
+
                 </>
               )}
             </div>
@@ -197,3 +199,4 @@ function UserProfile() {
 }
 
 export default UserProfile;
+
