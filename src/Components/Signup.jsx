@@ -3,22 +3,15 @@ import React, { useState, useEffect } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { auth, provider } from "./FireBase";
 import AlertMessage from "./Alert";
-import { 
-  signInWithPopup, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  sendPasswordResetEmail 
-} from "firebase/auth";
+import { signInWithPopup, signInWithPhoneNumber, RecaptchaVerifier } from "firebase/auth";
 
 function Signup() {
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [alert, setAlert] = useState(null);
   const [user, setUser] = useState(null);
+  const [alert, setAlert] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [otp, setOtp] = useState("");
+  const [confirmationResult, setConfirmationResult] = useState(null);
 
-  // Check localStorage for user data on page load
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -26,172 +19,137 @@ function Signup() {
     }
   }, []);
 
-  // Function to store user data in local storage
+  // Initialize reCAPTCHA properly
+  const setupRecaptcha = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+        size: "invisible",
+        callback: () => {
+          console.log("reCAPTCHA Verified!");
+        },
+        "expired-callback": () => {
+          console.log("reCAPTCHA expired. Refreshing...");
+        },
+      });
+    }
+  };
+
   const storeUserData = (user) => {
     const userData = {
       uid: user.uid,
-      email: user.email,
-      displayName: user.displayName || "No Name",
-      photoURL: user.photoURL || "",
+      phoneNumber: user.phoneNumber || "",
+      displayName: user.displayName || "User",
     };
     localStorage.setItem("user", JSON.stringify(userData));
-    setUser(userData); // Update state
+    setUser(userData);
   };
 
-  // Google Sign-in
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    setupRecaptcha(); // Ensure reCAPTCHA is initialized
+
+    const appVerifier = window.recaptchaVerifier;
+
+    try {
+      const confirmation = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+      setConfirmationResult(confirmation);
+      setAlert({ message: "OTP sent successfully!", type: "success" });
+    } catch (error) {
+      setAlert({ message: error.message, type: "error" });
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    if (!confirmationResult) {
+      setAlert({ message: "Please request OTP first.", type: "error" });
+      return;
+    }
+
+    try {
+      const result = await confirmationResult.confirm(otp);
+      setAlert({ message: "OTP verified successfully!", type: "success" });
+      storeUserData(result.user);
+    } catch (error) {
+      setAlert({ message: error.message, type: "error" });
+    }
+  };
+
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
       storeUserData(result.user);
       setAlert({ message: "Google sign-in successful!", type: "success" });
-      window.location.reload()
-    } catch (error) {
-      setAlert({ message: error.message, type: "error" });
-    }
-  };
-
-  // Email Sign-in
-  const handleEmailSignIn = async (e) => {
-    e.preventDefault();
-    try {
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      storeUserData(result.user);
-      setAlert({ message: "Login successful!", type: "success" });
-      window.location.reload()
-    } catch (error) {
-      setAlert({ message: error.message, type: "error" });
-    }
-  };
-
-  // Sign-up
-  const handleSignUp = async (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      setAlert({ message: "Passwords do not match!", type: "error" });
-      return;
-    }
-    try {
-      const result = await createUserWithEmailAndPassword(auth, email, password);
-      storeUserData(result.user);
-      setAlert({ message: "User signed up successfully!", type: "success" });
-    } catch (error) {
-      setAlert({ message: error.message, type: "error" });
-    }
-  };
-
-  // Forgot Password
-  const handleForgotPassword = async () => {
-    if (!email) {
-      setAlert({ message: "Please enter your email first!", type: "error" });
-      return;
-    }
-    try {
-      await sendPasswordResetEmail(auth, email);
-      setAlert({ message: "Password reset email sent!", type: "success" });
+      window.location.reload();
     } catch (error) {
       setAlert({ message: error.message, type: "error" });
     }
   };
 
   return (
-    <div className="h-[100%] flex flex-col md:flex-row items-center justify-center dark:bg-gray-900">
-      {/* Show Alert */}
-      <div className="alert text-lg font-light">
-        {alert && <AlertMessage message={alert.message} type={alert.type} onClose={() => setAlert(null)} />}
-      </div>
+    <div className="h-[100vh] w-full flex flex-col  md:flex-row items-center justify-center dark:bg-gray-900">
+      {alert && (
+        <div className="absolute top-5 w-full flex justify-center">
+          <AlertMessage message={alert.message} type={alert.type} onClose={() => setAlert(null)} />
+        </div>
+      )}
 
-      {/* Left side Image (for larger screens) */}
       {!user && (
-        <div className="hidden md:block md:h-[75%] md:w-1/2">
+        <div className="hidden md:block md:h-[55%] mb-[11rem] md:w-[40%]">
           <img src={img} alt="Login" className="w-full h-full object-cover rounded-lg" />
         </div>
       )}
 
-      {/* Show White Box if User is Logged In */}
       {user ? (
-        <div className="w-full md:w-1/2 lg:w-2/5 p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 text-center">Welcome, {user.displayName}!</h2>
-          <p className="text-center text-gray-500 dark:text-gray-300 mt-2">{user.email}</p>
+        <div className="w-full md:w-[50%] p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 text-center">
+            Welcome, {user.displayName}!
+          </h2>
+          <p className="text-center text-gray-500 dark:text-gray-300 mt-2">{user.phoneNumber}</p>
         </div>
       ) : (
-        // Show Login/Signup Box if No User
-        <div className="w-full md:w-1/2 lg:w-2/5 p-8 bg-white dark:bg-gray-900 rounded-lg">
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 text-center mb-6">
-            {isSignUp ? "Sign Up" : "Login"}
+        <div className="w-full md:w-[50%] flex flex-col h-[88%] p-8 dark:bg-gray-900 rounded-lg">
+          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 text-center mb-4">
+            Login to your account
           </h2>
-          
-          <form onSubmit={isSignUp ? handleSignUp : handleEmailSignIn}>
-            {/* Email */}
-            <div className="mb-2">
-              <label className="block text-gray-700 dark:text-gray-300">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
-                required
-              />
-            </div>
-            
-            {/* Password */}
-            <div className="mb-2">
-              <label className="block text-gray-700 dark:text-gray-300">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
-                required
-              />
-            </div>
-            
-            {/* Confirm Password (Only for Signup) */}
-            {isSignUp && (
-              <div className="mb-2">
-                <label className="block text-gray-700 dark:text-gray-300">Confirm Password</label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
-                  required
-                />
-              </div>
-            )}
-            
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full p-3 mt-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition duration-300"
-            >
-              {isSignUp ? "Sign Up" : "Login"}
-            </button>
-          </form>
-          
-          {/* Google Sign-in */}
           <button
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center p-3 mt-4 border rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-300"
+            className="w-full flex items-center justify-center p-3 border rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-300"
           >
-            <FaGoogle className="mr-2 text-red-500" /> Sign in with Google
+            <FaGoogle className="mr-2 text-red-500" /> Continue with Google
           </button>
-          
-          {/* Forgot Password */}
-          {!isSignUp && (
-            <p className="text-center mt-2 text-sm text-blue-500 cursor-pointer hover:underline" onClick={handleForgotPassword}>
-              Forgot Password?
-            </p>
-          )}
-          
-          {/* Toggle between Login & SignUp */}
-          <p className="text-center mt-4 text-sm text-gray-600 dark:text-gray-300">
-            {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
-            <span onClick={() => setIsSignUp(!isSignUp)} className="text-blue-500 cursor-pointer hover:underline">
-              {isSignUp ? "Login" : "Sign Up"}
-            </span>
-          </p>
+          <form onSubmit={confirmationResult ? handleVerifyOtp : handleSendOtp} className="pt-5">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="+1234567890"
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white shadow-sm"
+              required
+            />
+            {confirmationResult && (
+              <input
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder="Enter OTP"
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white shadow-sm mt-4"
+                required
+              />
+            )}
+            <button
+              type="submit"
+              className="w-full p-3 mt-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition duration-300 shadow-md"
+            >
+              {confirmationResult ? "Verify OTP" : "Login with OTP"}
+            </button>
+          </form>
         </div>
       )}
+      <div id="recaptcha-container"></div>
     </div>
   );
 }
