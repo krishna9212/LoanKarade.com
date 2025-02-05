@@ -60,8 +60,7 @@ function Navigation() {
         ) : (<button
           className="px-[8px] py-[9px] rounded-md bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all flex items-center justify-center text-[1.2rem]"
           onClick={(e) => setShowUser(true)}
-        >
-          <i className="fas fa-user"></i> 
+        ><i class="fa-solid fa-user"></i>
           
         </button>
         

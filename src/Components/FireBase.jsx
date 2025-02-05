@@ -1,13 +1,12 @@
-// Import required Firebase functions
+// Import the necessary functions from Firebase SDK
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 
-// Firebase configuration
+// Your Firebase configuration object
 const firebaseConfig = {
   apiKey: "AIzaSyBW5dTPn21LOYZjFghtDyFZ5XkXiE62728",
-  siteKey:"6Legdc0qAAAAAJBJpDqKZEU4uFIcDW5t-6dfdS_t",
   authDomain: "loankarade-1749f.firebaseapp.com",
   projectId: "loankarade-1749f",
   storageBucket: "loankarade-1749f.appspot.com",
@@ -18,13 +17,12 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Initialize Firebase services
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
-// Set Firebase Authentication language to device default
-// auth.useDeviceLanguage();
-
-// Export necessary modules
+// Export necessary Firebase modules
 export { auth, provider, db, RecaptchaVerifier, signInWithPhoneNumber, analytics };

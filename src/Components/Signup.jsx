@@ -7,27 +7,40 @@ import { signInWithPopup, signInWithPhoneNumber, RecaptchaVerifier } from "fireb
 import { doc, setDoc, getDoc, collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { db } from "./FireBase"; // Ensure Firestore is correctly imported
 
-
 function Signup() {
-  const [user, setUser] = useState(null);
-  const [alert, setAlert] = useState(null);
-  const [country, setCountry] = useState("+91");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [otp, setOtp] = useState("");
-  const [confirmationResult, setConfirmationResult] = useState(null);
-  const [loading, setLoading] = useState(false); // Loading state
+    const [user, setUser] = useState(null);
+    const [alert, setAlert] = useState(null);
+    const [country, setCountry] = useState("+91");
+    const [phoneNumber, setPhoneNumber] = useState("");
+    const [otp, setOtp] = useState("");
+    const [confirmationResult, setConfirmationResult] = useState(null);
+    const [loading, setLoading] = useState(false); // Loading state
+  
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        localStorage.clear()
-      // setUser(JSON.parse(storedUser));
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
-    
+    setupRecaptcha();
   }, []);
-  
-  
 
+ 
+  
+  // Initialize reCAPTCHA properly
+  const setupRecaptcha = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+        size: "invisible",
+        callback: () => {
+          console.log("reCAPTCHA Verified!");
+        },
+        "expired-callback": () => {
+          console.log("reCAPTCHA expired. Refreshing...");
+        },
+      });
+    }
+  };
 
   const storeUserData = async (authUser) => {
     try {
@@ -71,42 +84,26 @@ function Signup() {
       console.error("Error storing user data:", error);
     }
   };
-  
 
 
   const handleSendOtp = async (e) => {
+    
     e.preventDefault();
-    setLoading(true);
-    // console.log(window.recaptchaVerifier.render())
+
+    const appVerifier = window.recaptchaVerifier;
+    if (phoneNumber.length < 10) {
+      setAlert({ message: "Enter a valid 10-digit phone number", type: "error" });
+      return;
+    }
+
     try {
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-          size: "invisible",  // Use "normal" if you want the checkbox
-          callback: (response) => {
-            console.log("reCAPTCHA solved:", response);
-          },
-          "expired-callback": () => {
-            console.log("reCAPTCHA expired. Refresh and try again.");
-          },
-        });
-      }
-      console.log(window.recaptchaVerifier.render())
-      
-      const appVerifier = window.recaptchaVerifier;
-      
-      const confirmation = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+      const fullPhoneNumber = country + phoneNumber;
+      const confirmation = await signInWithPhoneNumber(auth, fullPhoneNumber, appVerifier);
       setConfirmationResult(confirmation);
-      console.log(window.recaptchaVerifier.render())
       setAlert({ message: "OTP sent successfully!", type: "success" });
-      
     } catch (error) {
-      console.error("Error sending OTP:", error);
-      // this.reCaptchaInstance.reset();
-      console.log(window.recaptchaVerifier.render())
       setAlert({ message: error.message, type: "error" });
     }
-  
-    setLoading(false);
   };
 
   const handleVerifyOtp = async (e) => {
@@ -119,7 +116,7 @@ function Signup() {
       }
   
       const result = await confirmationResult.confirm(otp);
-      setAlert({ message: "OTP verified successfully!", type: "success" });
+      
   
       const otpUser = {
         displayName: result.user.displayName || "User",
@@ -127,20 +124,20 @@ function Signup() {
         email: result.user.email || "",
       };
   
-      console.log("User Data:", otpUser);
-  
+      await storeUserData(otpUser);
+      setAlert({ message: "OTP verified successfully!", type: "success" });
+      setUser(false);
       setTimeout(() => window.location.reload(), 2000); // Reload after 2 seconds
+
+      console.log("User Data:", otpUser);
     } catch (error) {
-      console.error("Error verifying OTP:", error);
       setAlert({ message: "Invalid OTP. Please try again.", type: "error" });
-    }
+      }
   
     setLoading(false);
   };
   
   
-  
-
   const handleGoogleSignIn = async () => {
     setLoading(true); // Start loading
     try {
@@ -165,7 +162,8 @@ function Signup() {
     setLoading(false); // stop loading
   };
   
-
+  
+  
   return (
     <>
       {loading ? (
@@ -253,7 +251,6 @@ function Signup() {
       )}
     </>
   );
-  
 }
 
 export default Signup;
