@@ -29,19 +29,18 @@ function Signup() {
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
         size: "invisible",
-        callback: (response) => {
-          console.log("reCAPTCHA solved:", response);
-        },
-        "expired-callback": () => {
-          console.log("reCAPTCHA expired. Refreshing...");
-        },
-      });
-  
-      window.recaptchaVerifier.render().catch((err) => {
-        console.error("reCAPTCHA render error:", err);
+        callback: () => console.log("reCAPTCHA Verified!"),
+        "expired-callback": () => console.log("reCAPTCHA expired. Refreshing..."),
       });
     }
+  
+    return () => {
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear(); // Clears the reCAPTCHA instance
+      }
+    };
   }, []);
+  
   
   
   
@@ -94,35 +93,21 @@ function Signup() {
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
-    setLoading(true); // Start loading
-  
+    setLoading(true)
     if (phoneNumber.length < 10) {
       setAlert({ message: "Enter a valid 10-digit phone number", type: "error" });
-      setLoading(false);
       return;
     }
-  
+    
     try {
       const fullPhoneNumber = country + phoneNumber;
-  
-      // Reinitialize reCAPTCHA verifier (sometimes it expires)
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-          size: "invisible",
-        });
-      }
-  
-      const appVerifier = window.recaptchaVerifier;
-      const confirmation = await signInWithPhoneNumber(auth, fullPhoneNumber, appVerifier);
-  
+      const confirmation = await signInWithPhoneNumber(auth, fullPhoneNumber, window.recaptchaVerifier);
       setConfirmationResult(confirmation);
       setAlert({ message: "OTP sent successfully!", type: "success" });
     } catch (error) {
-      console.error("Error sending OTP:", error);
       setAlert({ message: error.message, type: "error" });
     }
-  
-    setLoading(false); // Stop loading
+    setLoading(false)
   };
   
   
