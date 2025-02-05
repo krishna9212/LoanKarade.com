@@ -7,7 +7,7 @@ import { getFirestore } from "firebase/firestore";
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBW5dTPn21LOYZjFghtDyFZ5XkXiE62728",
-  siteKey:"6LeoVMwqAAAAANgcHoAK3VYY6oIc5f4r5FnMyTjc",
+  siteKey:"6Legdc0qAAAAAJBJpDqKZEU4uFIcDW5t-6dfdS_t",
   authDomain: "loankarade-1749f.firebaseapp.com",
   projectId: "loankarade-1749f",
   storageBucket: "loankarade-1749f.appspot.com",

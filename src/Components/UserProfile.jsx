@@ -92,7 +92,7 @@ function UserProfile() {
     localStorage.removeItem("user");
     setUser(null);
     setAlert({ message: "Logged out successfully", type: "success" });
-    localStorage.removeItem('_grecaptcha');
+    // localStorage.removeItem('_grecaptcha');
     window.location.reload();
   };
 

@@ -8,7 +8,6 @@ import { doc, setDoc, getDoc, collection, query, where, getDocs, addDoc } from "
 import { db } from "./FireBase"; // Ensure Firestore is correctly imported
 
 
-
 function Signup() {
   const [user, setUser] = useState(null);
   const [alert, setAlert] = useState(null);
@@ -20,28 +19,12 @@ function Signup() {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      if (storedUser) {
+        localStorage.clear()
+      // setUser(JSON.parse(storedUser));
     }
+    
   }, []);
-
-  useEffect(() => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "invisible",
-        callback: () => console.log("reCAPTCHA Verified!"),
-        "expired-callback": () => console.log("reCAPTCHA expired. Refreshing..."),
-      });
-    }
-  
-    return () => {
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear(); // Clears the reCAPTCHA instance
-      }
-    };
-  }, []);
-  
-  
   
   
 
@@ -93,33 +76,48 @@ function Signup() {
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
-    setLoading(true)
-    if (phoneNumber.length < 10) {
-      setAlert({ message: "Enter a valid 10-digit phone number", type: "error" });
-      return;
-    }
-    
+    setLoading(true);
+    // console.log(window.recaptchaVerifier.render())
     try {
-      const fullPhoneNumber = country + phoneNumber;
-      const confirmation = await signInWithPhoneNumber(auth, fullPhoneNumber, window.recaptchaVerifier);
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+          size: "invisible",  // Use "normal" if you want the checkbox
+          callback: (response) => {
+            console.log("reCAPTCHA solved:", response);
+          },
+          "expired-callback": () => {
+            console.log("reCAPTCHA expired. Refresh and try again.");
+          },
+        });
+      }
+      console.log(window.recaptchaVerifier.render())
+      
+      const appVerifier = window.recaptchaVerifier;
+      
+      const confirmation = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       setConfirmationResult(confirmation);
+      console.log(window.recaptchaVerifier.render())
       setAlert({ message: "OTP sent successfully!", type: "success" });
+      
     } catch (error) {
+      console.error("Error sending OTP:", error);
+      // this.reCaptchaInstance.reset();
+      console.log(window.recaptchaVerifier.render())
       setAlert({ message: error.message, type: "error" });
     }
-    setLoading(false)
+  
+    setLoading(false);
   };
-  
-  
+
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    setLoading(true); // Start loading
-    if (!confirmationResult) {
-      setAlert({ message: "Please request OTP first.", type: "error" });
-      return;
-    }
+    setLoading(true);
   
     try {
+      if (!confirmationResult) {
+        throw new Error("Please request an OTP first.");
+      }
+  
       const result = await confirmationResult.confirm(otp);
       setAlert({ message: "OTP verified successfully!", type: "success" });
   
@@ -127,21 +125,20 @@ function Signup() {
         displayName: result.user.displayName || "User",
         phoneNumber: result.user.phoneNumber || "",
         email: result.user.email || "",
-        address: "N/A",  // You can add a form to collect this later
-        gender: "N/A",   // Same as above
       };
   
-      await storeUserData(otpUser);
-      localStorage.removeItem('_grecaptcha');
-
-      window.location.reload();
-
-      setUser(false);
+      console.log("User Data:", otpUser);
+  
+      setTimeout(() => window.location.reload(), 2000); // Reload after 2 seconds
     } catch (error) {
+      console.error("Error verifying OTP:", error);
       setAlert({ message: "Invalid OTP. Please try again.", type: "error" });
     }
-    setLoading(false); // stop loading
+  
+    setLoading(false);
   };
+  
+  
   
 
   const handleGoogleSignIn = async () => {
@@ -250,7 +247,8 @@ function Signup() {
             </div>
           )}
   
-          <div id="recaptcha-container"></div>
+      <div id="recaptcha-container"></div>
+          
         </div>
       )}
     </>
