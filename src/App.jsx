@@ -1,15 +1,15 @@
-import './App.css'
-import React from 'react'
-import Landingpage from './Components/Landingpage'
-
-
+import React from "react";
+import "./App.css";
+import Landingpage from "./Components/Landingpage";
+import Cursor from "./Components/Cursor";
 
 function App() {
   return (
-    <div className='h-screen w-screen '>
-      <Landingpage></Landingpage>
-      </div>
-  )
+    <div className="h-screen w-screen">
+      <Landingpage />
+      <Cursor />
+    </div>
+  );
 }
 
-export default App
+export default App;
