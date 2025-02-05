@@ -29,7 +29,7 @@ function Navigation() {
   
 
   return (<>
-    <nav className="h-[10%] w-full flex items-center justify-between bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 px-4 md:px-10 shadow-md">
+    <nav className="h-[10%] fixed w-full flex items-center justify-between bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 px-4 md:px-10  shadow-md">
       {/* Logo */}
       <div className="flex items-center h-full">
         <img src={logo} alt="LoanKarade" className="h-[60%] md:h-12 w-auto" />

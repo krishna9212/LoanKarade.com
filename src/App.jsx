@@ -1,15 +1,14 @@
 import './App.css'
 import React from 'react'
-import Navigation from './Components/Navigation'
+import Landingpage from './Components/Landingpage'
 
 
 
 function App() {
   return (
     <div className='h-screen w-screen '>
-      <Navigation></Navigation>
-      {/* <Temp></Temp> */}
-    </div>
+      <Landingpage></Landingpage>
+      </div>
   )
 }
 
