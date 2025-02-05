@@ -197,9 +197,7 @@ function UserProfile() {
             </div>
           </div>
         </div>
-      ) : (
-        <p className="text-red-500">User not found.</p>
-      )}
+      ) : localStorage.clear()}
       
       <div className="alert text-lg font-light">
         {alert && <AlertMessage message={alert.message} type={alert.type} onClose={() => setAlert(null)} />}
