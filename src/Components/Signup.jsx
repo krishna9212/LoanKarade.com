@@ -1,9 +1,13 @@
 import img from "./../assets/Login.jpg";
 import React, { useState, useEffect } from "react";
-import { FaGoogle } from "react-icons/fa";
+import { FaGoogle, FaSadCry } from "react-icons/fa";
 import { auth, provider } from "./FireBase";
 import AlertMessage from "./Alert";
 import { signInWithPopup, signInWithPhoneNumber, RecaptchaVerifier } from "firebase/auth";
+import { doc, setDoc, getDoc, collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import { db } from "./FireBase"; // Ensure Firestore is correctly imported
+
+
 
 function Signup() {
   const [user, setUser] = useState(null);
@@ -12,6 +16,7 @@ function Signup() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(null);
+  const [loading, setLoading] = useState(false); // Loading state
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -21,168 +26,251 @@ function Signup() {
   }, []);
 
   useEffect(() => {
-    // Initialize reCAPTCHA on component mount
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
         size: "invisible",
-        callback: () => {
-          console.log("reCAPTCHA Verified!");
+        callback: (response) => {
+          console.log("reCAPTCHA solved:", response);
         },
         "expired-callback": () => {
           console.log("reCAPTCHA expired. Refreshing...");
         },
-        // badge: "inline", // Moves the reCAPTCHA badge inline
+      });
+  
+      window.recaptchaVerifier.render().catch((err) => {
+        console.error("reCAPTCHA render error:", err);
       });
     }
   }, []);
   
+  
+  
 
-  const storeUserData = (user) => {
-    const userData = {
-      uid: user.uid,
-      phoneNumber: user.phoneNumber || "",
-      displayName: user.displayName || "User",
-    };
-    localStorage.setItem("user", JSON.stringify(userData));
-    setUser(userData);
+
+  const storeUserData = async (authUser) => {
+    try {
+      // Reference Firestore collection
+      const usersRef = collection(db, "users");
+  
+      // Query Firestore to check if user exists by email or phone
+      const q = query(usersRef, where("email", "==", authUser.email || ""), where("phoneNumber", "==", authUser.phoneNumber || ""));
+      const querySnapshot = await getDocs(q);
+  
+      let firestoreId;
+      let userData = {
+        phoneNumber: authUser.phoneNumber || "",
+        displayName: authUser.displayName || "User",
+        email: authUser.email || "",
+        address: authUser.address || "N/A",  // Default if no address
+        gender: authUser.gender || "N/A",   // Default if no gender
+        createdAt: new Date(),
+      };
+  
+      if (!querySnapshot.empty) {
+        // User exists, update their Firestore document
+        const existingUser = querySnapshot.docs[0];
+        firestoreId = existingUser.id;
+  
+        await setDoc(doc(db, "users", firestoreId), userData, { merge: true });
+      } else {
+        // User doesn't exist, create a new document
+        const newUserRef = await addDoc(usersRef, userData);
+        firestoreId = newUserRef.id;
+      }
+  
+      // Store Firestore ID
+      userData.firestoreId = firestoreId;
+      console.log("Stored User Data:", userData);
+  
+      // Save user data to local storage
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
+    } catch (error) {
+      console.error("Error storing user data:", error);
+    }
   };
+  
+
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
-
+    setLoading(true); // Start loading
+  
     if (phoneNumber.length < 10) {
       setAlert({ message: "Enter a valid 10-digit phone number", type: "error" });
+      setLoading(false);
       return;
     }
-
+  
     try {
       const fullPhoneNumber = country + phoneNumber;
+  
+      // Reinitialize reCAPTCHA verifier (sometimes it expires)
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+          size: "invisible",
+        });
+      }
+  
       const appVerifier = window.recaptchaVerifier;
       const confirmation = await signInWithPhoneNumber(auth, fullPhoneNumber, appVerifier);
+  
       setConfirmationResult(confirmation);
       setAlert({ message: "OTP sent successfully!", type: "success" });
     } catch (error) {
+      console.error("Error sending OTP:", error);
       setAlert({ message: error.message, type: "error" });
     }
+  
+    setLoading(false); // Stop loading
   };
-
+  
+  
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
+    setLoading(true); // Start loading
     if (!confirmationResult) {
       setAlert({ message: "Please request OTP first.", type: "error" });
       return;
     }
-
+  
     try {
       const result = await confirmationResult.confirm(otp);
       setAlert({ message: "OTP verified successfully!", type: "success" });
-      storeUserData(result.user);
-      setUser(false)
+  
+      const otpUser = {
+        displayName: result.user.displayName || "User",
+        phoneNumber: result.user.phoneNumber || "",
+        email: result.user.email || "",
+        address: "N/A",  // You can add a form to collect this later
+        gender: "N/A",   // Same as above
+      };
+  
+      await storeUserData(otpUser);
+      localStorage.removeItem('_grecaptcha');
+
       window.location.reload();
+
+      setUser(false);
     } catch (error) {
       setAlert({ message: "Invalid OTP. Please try again.", type: "error" });
     }
+    setLoading(false); // stop loading
   };
+  
 
   const handleGoogleSignIn = async () => {
+    setLoading(true); // Start loading
     try {
       const result = await signInWithPopup(auth, provider);
-      storeUserData(result.user);
+      
+      const googleUser = {
+        displayName: result.user.displayName,
+        email: result.user.email,
+        phoneNumber: result.user.phoneNumber || "",
+        address: "N/A",  // You can add a form to collect this later
+        gender: "N/A",   // Same as above
+      };
+  
+      await storeUserData(googleUser);
       setAlert({ message: "Google sign-in successful!", type: "success" });
-      setUser(false)
+      setUser(false);
       window.location.reload();
 
     } catch (error) {
       setAlert({ message: error.message, type: "error" });
     }
+    setLoading(false); // stop loading
   };
+  
 
   return (
-    <div className="h-[100vh] w-full flex flex-col md:flex-row items-center justify-center dark:bg-gray-900">
-      {alert && (
-        <div className="absolute top-5 w-full flex justify-center">
-          <AlertMessage message={alert.message} type={alert.type} onClose={() => setAlert(null)} />
+    <>
+      {loading ? (
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-50 backdrop-blur-xs z-10 pointer-events-auto">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
         </div>
-      )}
-
-      {!user && (
-        <div className="hidden md:block md:h-[60%] mb-[11rem] md:w-[40%]">
-          <img src={img} alt="Login" className="w-full h-full object-cover rounded-lg" />
-        </div>
-      )}
-
-      {user ? (
-        <div className="w-full md:w-[50%] p-8  bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 text-center">
-            Welcome, {user.displayName}!
-          </h2>
-          <p className="text-center text-gray-500 dark:text-gray-300 mt-2">{user.phoneNumber}</p>
-        </div>
-
       ) : (
-        <div className="w-full md:w-[50%] flex flex-col h-[94%] p-8 dark:bg-gray-900 rounded-lg">
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 text-center mb-4">
-            Login to your account
-          </h2>
-          <button
-            onClick={handleGoogleSignIn}
-            className="w-full flex items-center  justify-center p-3 border dark:border-black rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-300"
-          >
-            <FaGoogle className="mr-2 text-red-500" /> Continue with Google
-          </button>
-
-          <form onSubmit={confirmationResult ? handleVerifyOtp : handleSendOtp} className="pt-10">
-  {!confirmationResult ? (
-    // Phone Number Input - Visible only before OTP is sent
-    <div>
-      <div className="flex items-center space-x-2">
-        <img src="https://flagcdn.com/w40/in.png" alt="India Flag" className="w-6 h-4" />
-        <p className="text-gray-700 dark:text-gray-300">{country}</p>
-        <input
-          type="tel"
-          value={phoneNumber}
-          onChange={(e) => {
-            const inputValue = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-            setPhoneNumber(inputValue);
-          }}
-          placeholder="Mobile Number"
-          minLength={10}
-          maxLength={10}
-          className="w-full p-3 rounded-lg focus:outline-none dark:bg-transparent dark:text-gray-200"
-          required
-        />
-      </div>
-    </div>
-  ) : (
-    // OTP Input - Visible only after OTP is sent successfully
-    <input
-    type="tel"
-    value={otp}
-    onChange={(e) => {const inputValue = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-      setOtp(inputValue);
-    }}
-    minLength={6}
-    maxLength={6}
-    placeholder="Enter OTP"
-    className="w-full p-3 rounded-lg focus:outline-none dark:bg-gray-700 dark:text-white"
-    required
-    />
-  )}
-  <div className="line h-[0.1px] w-full bg-gray-300 mt-2"></div>
-
-  <button
-    type="submit"
-    className="w-full p-3 mt-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition duration-300 shadow-md"
-  >
-    {confirmationResult ? "Verify OTP" : "Login with OTP"}
-  </button>
-</form>
-
+        <div className="h-[100vh] w-full flex flex-col md:flex-row items-center justify-center dark:bg-gray-900">
+          {alert && (
+            <div className="absolute top-5 w-full flex justify-center">
+              <AlertMessage message={alert.message} type={alert.type} onClose={() => setAlert(null)} />
+            </div>
+          )}
+  
+          {!user && (
+            <div className="hidden md:block md:h-[60%] mb-[11rem] md:w-[40%]">
+              <img src={img} alt="Login" className="w-full h-full object-cover rounded-lg" />
+            </div>
+          )}
+  
+          {user ? (
+            <div className="w-full md:w-[50%] p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 text-center">
+                Welcome, {user.displayName}!
+              </h2>
+              <p className="text-center text-gray-500 dark:text-gray-300 mt-2">{user.phoneNumber}</p>
+            </div>
+          ) : (
+            <div className="w-full md:w-[50%] flex flex-col h-[94%] p-8  dark:bg-gray-900 rounded-lg">
+              <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 text-center mb-4">
+                Login to your account
+              </h2>
+              <button
+                onClick={handleGoogleSignIn}
+                className="w-full flex items-center justify-center p-3 border dark:border-black rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-300"
+              >
+                <FaGoogle className="mr-2 text-red-500" /> Continue with Google
+              </button>
+  
+              <form onSubmit={confirmationResult ? handleVerifyOtp : handleSendOtp} className="pt-10">
+                {!confirmationResult ? (
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <img src="https://flagcdn.com/w40/in.png" alt="India Flag" className="w-6 h-4" />
+                      <p className="text-gray-700 dark:text-gray-300">{country}</p>
+                      <input
+                        type="tel"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
+                        placeholder="Mobile Number"
+                        minLength={10}
+                        maxLength={10}
+                        className="w-full p-3 rounded-lg focus:outline-none dark:bg-transparent dark:text-gray-200"
+                        required
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <input
+                    type="tel"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                    minLength={6}
+                    maxLength={6}
+                    placeholder="Enter OTP"
+                    className="w-full p-3 rounded-lg focus:outline-none dark:bg-gray-700 dark:text-white"
+                    required
+                  />
+                )}
+                <div className="line h-[0.1px] w-full bg-gray-300 mt-2"></div>
+  
+                <button
+                  type="submit"
+                  className="w-full p-3 mt-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition duration-300 shadow-md"
+                >
+                  {confirmationResult ? "Verify OTP" : "Login with OTP"}
+                </button>
+              </form>
+            </div>
+          )}
+  
+          <div id="recaptcha-container"></div>
         </div>
       )}
-      <div id="recaptcha-container"></div>
-    </div>
+    </>
   );
+  
 }
 
 export default Signup;

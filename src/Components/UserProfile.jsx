@@ -11,7 +11,7 @@ function UserProfile() {
   const [uid, setUid] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", address: "", gender: "" });
-  const [alert, setAlert] = useState(null); // Added the alert state
+  const [alert, setAlert] = useState(null);
 
   const avatars = { male, female, other };
 
@@ -20,28 +20,32 @@ function UserProfile() {
       const storedUser = localStorage.getItem("user");
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
-        setUid(parsedUser.uid || null);
+        if (parsedUser.firestoreId) {
+          setUid(parsedUser.firestoreId);
+        } else {
+          console.warn("No Firestore document ID found in localStorage.");
+          setLoading(false);
+        }
       }
     } catch (error) {
       console.error("Error parsing localStorage user:", error);
+      setLoading(false);
     }
   }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!uid) {
-        console.warn("No UID found in localStorage.");
-        setLoading(false);
-        return;
-      }
+      if (!uid) return; // Prevent Firestore reads if UID is missing
+
       try {
         const db = getFirestore();
         const userRef = doc(db, "users", uid);
         const userSnap = await getDoc(userRef);
 
         if (userSnap.exists()) {
-          setUser(userSnap.data());
-          setFormData(userSnap.data());
+          const userData = userSnap.data();
+          setUser(userData);
+          setFormData(userData);
         } else {
           console.warn("User not found in Firestore.");
         }
@@ -52,40 +56,46 @@ function UserProfile() {
       }
     };
 
-    if (uid) {
-      fetchUserData();
-    }
+    fetchUserData();
   }, [uid]);
 
   const handleEdit = () => setIsEditing(true);
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSave = async () => {
+    if (!uid) {
+      setAlert({ message: "Error: No user ID found.", type: "error" });
+      return;
+    }
+  
     try {
       const db = getFirestore();
       const userRef = doc(db, "users", uid);
       await updateDoc(userRef, formData);
-      
-      // Update the user state with the new formData
+  
       setUser(formData);
       setIsEditing(false);
   
-      // Save the updated user data in localStorage for faster loading
-      localStorage.setItem("user", JSON.stringify({ ...formData, uid }));
+      // Store user data in localStorage, including name separately
+      localStorage.setItem("user", JSON.stringify({ ...formData, firestoreId: uid }));
+      localStorage.setItem("name", formData.name); // Store the name separately
   
       setAlert({ message: "Profile updated successfully!", type: "success" });
-    
     } catch (error) {
       console.error("Error updating user data:", error);
       setAlert({ message: "Failed to update profile.", type: "error" });
     }
   };
+  
+
   const handleLogout = () => {
-    localStorage.removeItem('user'); // Remove user from localStorage
-    setUser(null); // Clear user state
-    setAlert({ message: "logged out successfully", type: "success" });
+    localStorage.removeItem("user");
+    setUser(null);
+    setAlert({ message: "Logged out successfully", type: "success" });
+    localStorage.removeItem('_grecaptcha');
     window.location.reload();
   };
+
   return (
     <div className={`flex justify-center items-center h-96 w-96  text-black dark:bg-gray-800  dark:text-white bg-gray-100 ${isEditing ? "-mt-5" : "mt-10"}`}>
       {loading ? (
@@ -97,7 +107,7 @@ function UserProfile() {
             <img
               src={avatars[user.gender] || avatars.other} // Use user.gender for avatar
               alt="Avatar"
-              className={`w-24 h-24 rounded-full border-4 border-white transition-opacity ${isEditing ? "hidden" : "opacity-100"}`}
+              className={`w-24 h-24 rounded-full border-1 border-gray-300 dark:border-gray-600 transition-opacity ${isEditing ? "hidden" : "opacity-100"}`}
             />
           </div>
 
@@ -113,7 +123,7 @@ function UserProfile() {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Name"
-                    className="w-full p-2 mt-4 rounded border-[0.2px] outline-none border-gray-300 dark:border-gray-600 dark:border-gray-600"
+                    className="w-full p-2 mt-4 rounded border-[0.2px] outline-none border-gray-300 dark:border-gray-600 "
                   />
                   <input
                     type="email"
@@ -145,11 +155,11 @@ function UserProfile() {
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className="w-full p-2 rounded border-[0.2px] outline-none border-gray-300 dark:border-gray-600"
+                    className="w-[100%] p-2 rounded border-[0.2px] outline-none  border-gray-300 dark:bg-gray-800 dark:border-gray-600"
                   >
-                    <option value="other">Other</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
+                    <option value="other" className="dark:text-gray-100 dark:bg-gray-700 p-2">Other</option>
+                    <option value="male" className="dark:text-gray-100 dark:bg-gray-700 p-2">Male</option>
+                    <option value="female" className="dark:text-gray-100 dark:bg-gray-700 p-2">Female</option>
                   </select>
                   <button onClick={handleSave} className="text-gray-100 outline-none  bg-blue-600  px-4 md:py-2 py-3 rounded-xl w-full hover:bg-blue-700 transition-all duration-700 text-sm md:text-base font-semibold  transform ">
                     Save
@@ -157,11 +167,11 @@ function UserProfile() {
                 </>
               ) : (
                 <>
-                  <p><strong>Name:</strong> {user.name || "N/A"}</p>
-                  <p><strong>Email:</strong> {user.email || "N/A"}</p>
-                  <p><strong>Phone:</strong> {user.phone || "N/A"}</p>
-                  <p><strong>Address:</strong> {user.address || "N/A"}</p>
-                  <p><strong>Gender:</strong> {user.gender || "N/A"}</p>
+                  <p className="text-gray-700 dark:text-gray-300"><strong>Name:</strong> {user.displayName || "N/A"}</p>
+                  <p className="text-gray-700 dark:text-gray-300"><strong>Email:</strong> {user.email || "N/A"}</p>
+                  <p className="text-gray-700 dark:text-gray-300"><strong>Phone:</strong> {user.phoneNumber || "N/A"}</p>
+                  <p className="text-gray-700 dark:text-gray-300"><strong>Address:</strong> {user.address || "N/A"}</p>
+                  <p className="text-gray-700 dark:text-gray-300"><strong>Gender:</strong> {user.gender || ""}</p>
                   
                   
     <div className={`flex h-full w-full justify-between items-center gap-1 -mb-12  pt-4 ${isEditing ? "-mb-0  pt-0" : "-mb-12  pt-4"}`}>
