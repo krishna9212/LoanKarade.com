@@ -28,7 +28,7 @@ const SliderBanner = ({ children, autoPlay = true, interval = 3000 }) => {
 
   return (
     <div
-      className="slider-banner h-[95%] h-min-full" 
+      className="slider-banner h-[80%] md:h-[95%] h-min-full" 
       onMouseEnter={() => setIsPaused(true)}  // Pause on hover
       onMouseLeave={() => setIsPaused(false)} // Resume on mouse leave
     >
