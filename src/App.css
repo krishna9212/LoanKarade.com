@@ -112,7 +112,7 @@ html,body{
     padding: 10px 15px;
     cursor: pointer;
     font-size: 2rem;
-    opacity: 60%;
+    opacity: 100%;
     border-radius: 50%;
     z-index: 10;
     transition: 0.3s ease;
@@ -132,22 +132,22 @@ html,body{
     bottom: 15px;
     display: flex;
     justify-content: center;
-    width: 100%;
+    /* width: 100%; */
   }
   
   .dot {
-    height: 12px;
-    width: 12px;
+    height: 5px;
+    width: 18px;
     margin: 0 5px;
-    background-color: #bbb;
-    border-radius: 50%;
+    background-color: #abcffd;
+    /* border-radius: 50%; */
     display: inline-block;
     transition: background-color 0.3s;
     cursor: pointer;
   }
   
   .dot.active {
-    background-color: #028ACA;
+    background-color: #6babff;
     transform: scale(1.2);
   }
   

@@ -1,8 +1,7 @@
 import React from 'react'
-import Navigation from './Navigation'
 import bank from "./../assets/pic1.png"
 
-function Page1() {
+function Page3() {
   return (
     <div className=' h-full w-full '>
             <div className=' h-[100%]  md:-mt-0 md:-mb-10  md:pt-0  p-5 w-[full] bg-blue-100 dark:bg-gray-800  flex flex-col-reverse md:flex-row'>
@@ -27,4 +26,4 @@ function Page1() {
   )
 }
 
-export default Page1
+export default Page3
