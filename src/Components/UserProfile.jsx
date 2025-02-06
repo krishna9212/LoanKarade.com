@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs } from "firebase/firestore";
 import male from "./../assets/male.png";
 import female from "./../assets/female.png";
 import other from "./../assets/other.png";
@@ -10,10 +10,11 @@ function UserProfile() {
   const [loading, setLoading] = useState(true);
   const [uid, setUid] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "", address: "", gender: "" });
+  const [formData, setFormData] = useState({ displayName: "", email: "", phoneNumber: "", address: "", gender: "" });
   const [alert, setAlert] = useState(null);
 
   const avatars = { male, female, other };
+  const db = getFirestore();
 
   useEffect(() => {
     try {
@@ -22,10 +23,14 @@ function UserProfile() {
         const parsedUser = JSON.parse(storedUser);
         if (parsedUser.firestoreId) {
           setUid(parsedUser.firestoreId);
+          setUser(parsedUser); // Load stored data while fetching latest from Firestore
+          setFormData(parsedUser);
         } else {
-          console.warn("No Firestore document ID found in localStorage.");
-          setLoading(false);
+          console.warn("No Firestore document ID found in localStorage. Checking Firestore...");
+          findUserInFirestore(parsedUser.email, parsedUser.phoneNumber);
         }
+      } else {
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error parsing localStorage user:", error);
@@ -33,12 +38,42 @@ function UserProfile() {
     }
   }, []);
 
+  const findUserInFirestore = async (email, phoneNumber) => {
+    try {
+      if (!email && !phoneNumber) return;
+
+      const usersRef = collection(db, "users");
+      const q = query(
+        usersRef,
+        where("email", "==", email),
+        where("phoneNumber", "==", phoneNumber)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0];
+        const userData = userDoc.data();
+        setUid(userDoc.id);
+        setUser(userData);
+        setFormData(userData);
+
+        // Store in localStorage for future fast access
+        localStorage.setItem("user", JSON.stringify({ ...userData, firestoreId: userDoc.id }));
+      } else {
+        console.warn("User not found in Firestore.");
+      }
+    } catch (error) {
+      console.error("Error finding user in Firestore:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!uid) return; // Prevent Firestore reads if UID is missing
+      if (!uid) return;
 
       try {
-        const db = getFirestore();
         const userRef = doc(db, "users", uid);
         const userSnap = await getDoc(userRef);
 
@@ -46,6 +81,9 @@ function UserProfile() {
           const userData = userSnap.data();
           setUser(userData);
           setFormData(userData);
+
+          // Update localStorage
+          localStorage.setItem("user", JSON.stringify({ ...userData, firestoreId: uid }));
         } else {
           console.warn("User not found in Firestore.");
         }
@@ -56,7 +94,7 @@ function UserProfile() {
       }
     };
 
-    fetchUserData();
+    if (uid) fetchUserData();
   }, [uid]);
 
   const handleEdit = () => setIsEditing(true);
@@ -67,41 +105,38 @@ function UserProfile() {
       setAlert({ message: "Error: No user ID found.", type: "error" });
       return;
     }
-  
+
     try {
-      const db = getFirestore();
       const userRef = doc(db, "users", uid);
       await updateDoc(userRef, formData);
-  
+
       setUser(formData);
       setIsEditing(false);
-  
-      // Store user data in localStorage, including name separately
+
+      // Store user data in localStorage
       localStorage.setItem("user", JSON.stringify({ ...formData, firestoreId: uid }));
-      localStorage.setItem("name", formData.name); // Store the name separately
-  
+
       setAlert({ message: "Profile updated successfully!", type: "success" });
     } catch (error) {
       console.error("Error updating user data:", error);
       setAlert({ message: "Failed to update profile.", type: "error" });
     }
   };
-  
 
   const handleLogout = () => {
     localStorage.removeItem("user");
     setUser(null);
     setAlert({ message: "Logged out successfully", type: "success" });
-    // localStorage.removeItem('_grecaptcha');
     window.location.reload();
   };
 
+
   return (
-    <div className={`flex justify-center items-center h-96 w-96  text-black dark:bg-gray-800  dark:text-white bg-gray-100 ${isEditing ? "-mt-5" : "mt-10"}`}>
+    <div className={`flex justify-center items-center h-96 w-96  text-black   shadow-black dark:bg-gray-800  dark:text-white bg-gray-200 ${isEditing ? "-mt-5" : "mt-10"}`}>
       {loading ? (
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-10 w-10  border-t-2 border-blue-500"></div>
       ) : user ? (
-        <div className="relative w-96 bg-gray-100 text-black dark:bg-gray-800  dark:text-white rounded-lg p-6">
+        <div className="relative w-96  bg-gray-200 text-black dark:bg-gray-800  dark:text-white rounded-lg p-6">
           {/* Floating Avatar */}
           <div className="absolute left-1/2 -top-12 transform -translate-x-1/2">
             <img
@@ -119,8 +154,8 @@ function UserProfile() {
                 <>
                   <input
                     type="text"
-                    name="name"
-                    value={formData.name}
+                    name="displayName"
+                    value={formData.displayName}
                     onChange={handleChange}
                     placeholder="Name"
                     className="w-full p-2 mt-4 rounded border-[0.2px] outline-none border-gray-300 dark:border-gray-600 "
@@ -135,8 +170,8 @@ function UserProfile() {
                   />
                   <input
                     type="tel"
-                    name="phone"
-                    value={formData.phone}
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
                     onChange={handleChange}
                     maxLength={10}
                     minLength={10}
@@ -161,7 +196,7 @@ function UserProfile() {
                     <option value="male" className="dark:text-gray-100 dark:bg-gray-700 p-2">Male</option>
                     <option value="female" className="dark:text-gray-100 dark:bg-gray-700 p-2">Female</option>
                   </select>
-                  <button onClick={handleSave} className="text-gray-100 outline-none  bg-blue-600  px-4 md:py-2 py-3 rounded-xl w-full hover:bg-blue-700 transition-all duration-700 text-sm md:text-base font-semibold  transform ">
+                  <button onClick={handleSave} className="border-blue-600   dark:text-gray-200 dark:hover:bg-blue-700  text-black px-4 md:py-2 py-3 mt-2 w-full border-[0.2px] rounded-xl hover:bg-blue-200 transition-all duration-700 text-sm md:text-base font-semibold  transform ">
                     Save
                   </button>
                 </>
@@ -178,7 +213,7 @@ function UserProfile() {
 
   <button
     onClick={handleLogout}
-    className="bg-red-600    dark:hover:bg-red-700 text-white px-4 md:py-2 py-3 w-1/2 border-[0.4px] rounded-xl hover:bg-red-500 transition-all duration-700 text-sm md:text-base font-semibold  transform "
+    className="border-red-600 dark:text-gray-200   dark:hover:bg-red-500 text-black px-4 md:py-2 py-3 w-1/2 border-[0.2px] rounded-xl hover:bg-red-200 transition-all duration-1000 text-sm md:text-base font-semibold  transform "
   >
     Log Out
   </button>
@@ -186,7 +221,7 @@ function UserProfile() {
  
   <button
     onClick={handleEdit}
-    className=" text-gray-700 border-[0.4px] border-gray-300 dark:text-gray-200 px-4 md:py-2 py-3 rounded-xl w-1/2 hover:bg-gray-200  dark:hover:bg-gray-900 transition-all duration-700 text-sm md:text-base font-semibold  transform "
+    className=" text-gray-700 border-[0.2px] hover:bg-gray-300 border-gray-500 dark:text-gray-200 px-4 md:py-2 py-3 rounded-xl w-1/2   dark:hover:bg-gray-900 transition-all duration-700 text-sm md:text-base font-semibold  transform "
   >
     Edit Profile
   </button>

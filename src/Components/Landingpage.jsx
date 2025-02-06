@@ -5,7 +5,6 @@ import bank from "./../assets/bank.png"
 function Landingpage() {
   return (
     <div className=' h-full w-full '>
-            <Navigation></Navigation>
             <div className=' md:h-[100%] pt-20 md:pt-0 w-[full] bg-white flex flex-col-reverse md:flex-row'>
                 <div className="left -mt-[2.5rem] md:-mt-[0rem] md:h-full  md:w-[45%] flex flex-col px-4 p-0 md:p-10 md:pt-40  justify-center  text-black">
                     <h1 className='text-[3.7rem] md:text-[4.2rem] whitespace-nowrap poppins-semibold '>Need a Loan?</h1> 

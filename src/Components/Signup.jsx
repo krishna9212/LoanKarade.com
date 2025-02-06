@@ -17,14 +17,37 @@ function Signup() {
     const [loading, setLoading] = useState(false); // Loading state
   
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setupRecaptcha();
-  }, []);
-
+    useEffect(() => {
+      const checkUser = async () => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+  
+          // Check Firestore for existing user data based on email or phone
+          const usersRef = collection(db, "users");
+          const q = query(usersRef, 
+            where("email", "==", parsedUser.email || ""), 
+            where("phoneNumber", "==", parsedUser.phoneNumber || "")
+          );
+          const querySnapshot = await getDocs(q);
+  
+          if (!querySnapshot.empty) {
+            const firestoreUser = querySnapshot.docs[0].data();
+            firestoreUser.firestoreId = querySnapshot.docs[0].id; // Add firestoreId
+            localStorage.setItem("user", JSON.stringify(firestoreUser)); // Update localStorage
+            setUser(firestoreUser); // Use Firestore data
+            console.log("User data loaded from Firestore:", firestoreUser);
+          } else {
+            setUser(parsedUser); // User local storage data as fallback
+            console.log("User data loaded from localStorage:", parsedUser);
+          }
+        }
+      };
+  
+      checkUser();
+      setupRecaptcha();
+    }, []);
+  
  
   
   // Initialize reCAPTCHA properly
@@ -42,44 +65,57 @@ function Signup() {
     }
   };
 
+
   const storeUserData = async (authUser) => {
     try {
-      // Reference Firestore collection
       const usersRef = collection(db, "users");
   
-      // Query Firestore to check if user exists by email or phone
-      const q = query(usersRef, where("email", "==", authUser.email || ""), where("phoneNumber", "==", authUser.phoneNumber || ""));
-      const querySnapshot = await getDocs(q);
+      // 1. Query by email FIRST
+      let q = query(usersRef, where("email", "==", authUser.email || ""));
+      let querySnapshot = await getDocs(q);
   
       let firestoreId;
       let userData = {
         phoneNumber: authUser.phoneNumber || "",
         displayName: authUser.displayName || "User",
         email: authUser.email || "",
-        address: authUser.address || "N/A",  // Default if no address
-        gender: authUser.gender || "N/A",   // Default if no gender
+        address: authUser.address || "N/A",
+        gender: authUser.gender || "N/A",
         createdAt: new Date(),
       };
   
+  
       if (!querySnapshot.empty) {
-        // User exists, update their Firestore document
+        // User found by email, update that document
         const existingUser = querySnapshot.docs[0];
         firestoreId = existingUser.id;
-  
         await setDoc(doc(db, "users", firestoreId), userData, { merge: true });
+        console.log("User updated by email:", userData);
+  
       } else {
-        // User doesn't exist, create a new document
-        const newUserRef = await addDoc(usersRef, userData);
-        firestoreId = newUserRef.id;
+        // 2. If no email match, query by phone number
+        q = query(usersRef, where("phoneNumber", "==", authUser.phoneNumber || ""));
+        querySnapshot = await getDocs(q);
+  
+        if (!querySnapshot.empty) {
+          // User found by phone, update that document
+          const existingUser = querySnapshot.docs[0];
+          firestoreId = existingUser.id;
+          await setDoc(doc(db, "users", firestoreId), userData, { merge: true });
+          console.log("User updated by phone:", userData);
+  
+        } else {
+          // User not found by either email or phone, create new document
+          const newUserRef = await addDoc(usersRef, userData);
+          firestoreId = newUserRef.id;
+          console.log("New user created:", userData);
+        }
       }
   
-      // Store Firestore ID
       userData.firestoreId = firestoreId;
-      console.log("Stored User Data:", userData);
-  
-      // Save user data to local storage
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
+  
     } catch (error) {
       console.error("Error storing user data:", error);
     }
@@ -171,7 +207,7 @@ function Signup() {
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
         </div>
       ) : (
-        <div className="h-[100vh] w-full flex flex-col md:flex-row items-center justify-center dark:bg-gray-900">
+        <div className="h-[100vh] w-full flex flex-col md:flex-row items-center justify-center bg-gray-50 shadow-black shadow-2xl dark:bg-gray-900">
           {alert && (
             <div className="absolute top-5 w-full flex justify-center">
               <AlertMessage message={alert.message} type={alert.type} onClose={() => setAlert(null)} />
@@ -198,16 +234,22 @@ function Signup() {
               </h2>
               <button
                 onClick={handleGoogleSignIn}
-                className="w-full flex items-center justify-center p-3 border dark:border-black rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-300"
+                className="w-full flex items-center justify-center p-3  dark:border-black rounded-lg border-[0.2px]  dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-300"
               >
                 <FaGoogle className="mr-2 text-red-500" /> Continue with Google
               </button>
+              <div className="linediv flex justify-between w-full items-center h-[4%]  gap-3 mt-6 -mb-2 ">
+              <div className="line h-[0.1px] w-full bg-gray-500 md:bg-gray-400  "></div>
+              <p className="text-center whitespace-nowrap text-gray-600  ">or continue with mobile number</p>
+              <div className="line h-[0.1px] w-full bg-gray-500 md:bg-gray-400 "></div>
+
+              </div>
   
               <form onSubmit={confirmationResult ? handleVerifyOtp : handleSendOtp} className="pt-10">
                 {!confirmationResult ? (
                   <div>
-                    <div className="flex items-center space-x-2">
-                      <img src="https://flagcdn.com/w40/in.png" alt="India Flag" className="w-6 h-4" />
+                    <div className="flex items-center ">
+                      <img src="https://flagcdn.com/w40/in.png" alt="India Flag" className="w-6 h-4 mr-2" />
                       <p className="text-gray-700 dark:text-gray-300">{country}</p>
                       <input
                         type="tel"
@@ -233,11 +275,11 @@ function Signup() {
                     required
                   />
                 )}
-                <div className="line h-[0.1px] w-full bg-gray-300 mt-2"></div>
+                <div className="line h-[0.5px] md:h-[0.1px] w-full bg-gray-600 md:bg-gray-500 -mt-1"></div>
   
                 <button
                   type="submit"
-                  className="w-full p-3 mt-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition duration-300 shadow-md"
+                  className="w-full p-3 mt-6 text-gray-100  hover:bg-transparent hover:border-blue-500 border-[0.2px] rounded-lg bg-blue-500 hover:text-gray-800 dark:hover:text-gray-200  transition duration-1000 shadow-md"
                 >
                   {confirmationResult ? "Verify OTP" : "Login with OTP"}
                 </button>

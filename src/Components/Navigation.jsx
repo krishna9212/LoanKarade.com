@@ -40,10 +40,10 @@ function Navigation() {
         {/* Dark Mode Toggle */}
         <button
           onClick={() => setDarkMode(!darkMode)}
-          className="px-[8px] py-[9px] rounded-md bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all flex items-center justify-center"
+          className="px-[9px] py-[11.3px] rounded-md transition-all duration-1000 border-[0.4px] border-gray-400 dark:bg-gray-900 dark:hover:bg-transparent   hover:bg-gray-200     flex items-center justify-center"
           >
           {darkMode ? (
-            <FaSun className="text-yellow-500 text-lg" />
+            <FaSun className="text-gray-200 text-lg" />
           ) : (
             <FaMoon className="text-gray-900 text-lg" />
           )}
@@ -53,12 +53,12 @@ function Navigation() {
         {!user ? (
           <button
           onClick={() => setShowModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all text-sm md:text-base font-medium"
+          className="border-blue-600 border-[0.2px]  duration-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-blue-600  hover:text-gray-200 transition-all text-sm md:text-base font-medium"
           >
             Sign Up
           </button>
         ) : (<button
-          className="px-[8px] py-[9px] rounded-md bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all flex items-center justify-center text-[1.2rem]"
+          className="px-[11px] py-[12px] rounded-md transition-all duration-1000 border-[0.4px] border-gray-400 dark:bg-gray-900 dark:hover:bg-transparent   hover:bg-gray-200     flex items-center justify-center  "
           onClick={(e) => setShowUser(true)}
         ><i class="fa-solid fa-user"></i>
           
@@ -73,7 +73,7 @@ function Navigation() {
 
       {ShowUser && (
         <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 backdrop-blur-xs z-10 pointer-events-auto">
-        <div className="w-min-[95%] md:w-min-[60%] rounded-xl overflow-hidden h-[55%] md:h-[65%] bg-gray-100 dark:bg-gray-800 relative">
+        <div className="w-min-[95%] md:w-min-[60%]  rounded-xl overflow-hidden h-[55%] md:h-[65%] bg-gray-200 dark:bg-gray-800 relative">
           <UserProfile></UserProfile>
           <button
             onClick={() => setShowUser(false)}
