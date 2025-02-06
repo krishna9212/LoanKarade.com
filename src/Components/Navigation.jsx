@@ -29,7 +29,7 @@ function Navigation() {
   
 
   return (<>
-    <nav className="h-[10%] fixed w-full flex items-center justify-between bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 px-4 md:px-10  shadow-md">
+    <nav className="h-[10%] fixed z-50 w-full flex items-center justify-between bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 px-4 md:px-10  shadow-md">
       {/* Logo */}
       <div className="flex items-center h-full">
         <img src={logo} alt="LoanKarade" className="h-[60%] md:h-12 w-auto" />
@@ -53,7 +53,7 @@ function Navigation() {
         {!user ? (
           <button
           onClick={() => setShowModal(true)}
-          className="border-blue-600 border-[0.2px]  duration-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-blue-600  hover:text-gray-200 transition-all text-sm md:text-base font-medium"
+          className="border-blue-600 border-[0.2px]  duration-700 text-gray-800 dark:text-gray-200 px-4 py-[9px] md:py-[7.5px] rounded-md hover:bg-blue-600  hover:text-gray-200 transition-all text-sm md:text-base font-medium"
           >
             Sign Up
           </button>

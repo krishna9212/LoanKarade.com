@@ -36,7 +36,7 @@ const Cursor = () => {
     return () => cancelAnimationFrame(requestRef.current);
   }, []);
 
-  return <div ref={cursorRef} className="cursor" />;
+  return <div ref={cursorRef} className="cursor z-50" />;
 };
 
 export default Cursor;
