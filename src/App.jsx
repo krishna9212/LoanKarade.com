@@ -17,11 +17,10 @@ function App() {
       <SliderBanner autoPlay={true} interval={4000}>
       <Page1></Page1>
       <Page2></Page2>
-      <Page3></Page3>
-      {/* <Page4></Page4> */}
+     
       </SliderBanner>
-      
       <LoanCatagories></LoanCatagories>
+      
       <div className="cur hidden md:block">
       <Cursor />
       </div>
