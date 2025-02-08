@@ -234,9 +234,9 @@ function Signup() {
               </h2>
               <button
                 onClick={handleGoogleSignIn}
-                className="w-full flex items-center justify-center p-3  dark:border-black rounded-lg border-[0.2px]  dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-300"
+                className="w-full flex items-center justify-center p-3 text-black dark:text-gray-100 dark:border-black rounded-lg border-[0.2px]  dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-300"
               >
-                <FaGoogle className="mr-2 text-red-500" /> Continue with Google
+                <FaGoogle className="mr-2 text-red-500" /> <p className="mt-[0.8px] md:mb-[0.3px] text-[0.9rem] md:text-[1rem]">Continue with Google</p>
               </button>
               <div className="linediv flex justify-between w-full items-center h-[4%]  gap-3 mt-6 -mb-2 ">
               <div className="line h-[0.1px] w-full bg-gray-500 md:bg-gray-400  "></div>
