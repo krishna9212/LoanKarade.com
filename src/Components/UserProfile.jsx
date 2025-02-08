@@ -24,7 +24,25 @@ function UserProfile() {
         if (parsedUser.firestoreId) {
           setUid(parsedUser.firestoreId);
           setUser(parsedUser); // Load stored data while fetching latest from Firestore
-          setFormData(parsedUser);
+  
+          setFormData({
+            name: parsedUser.displayName || "",
+            email: parsedUser.email || "",
+            phone: parsedUser.phoneNumber || "",
+            address: parsedUser.address || "",
+            city: parsedUser.city || "",
+            createdAt: parsedUser.createdAt || "",
+            firestoreId: parsedUser.firestoreId || "",
+            gender: parsedUser.gender || "",
+            employmentType: parsedUser.employmentType || "",
+            salary: parsedUser.salary || "",
+            company: parsedUser.company || "",
+            businessName: parsedUser.businessName || "",
+            grossIncome: parsedUser.grossIncome || "",
+            loanAmount: parsedUser.loanAmount || "",
+            PositionInCompany: parsedUser.PositionInCompany || "",
+            CatagoryOfBusiness: parsedUser.CatagoryOfBusiness || "",
+          });
         } else {
           console.warn("No Firestore document ID found in localStorage. Checking Firestore...");
           findUserInFirestore(parsedUser.email, parsedUser.phoneNumber);
@@ -37,6 +55,7 @@ function UserProfile() {
       setLoading(false);
     }
   }, []);
+  
 
   const findUserInFirestore = async (email, phoneNumber) => {
     try {
@@ -105,23 +124,34 @@ function UserProfile() {
       setAlert({ message: "Error: No user ID found.", type: "error" });
       return;
     }
-
+  
     try {
       const userRef = doc(db, "users", uid);
-      await updateDoc(userRef, formData);
-
-      setUser(formData);
-      setIsEditing(false);
-
-      // Store user data in localStorage
-      localStorage.setItem("user", JSON.stringify({ ...formData, firestoreId: uid }));
-
-      setAlert({ message: "Profile updated successfully!", type: "success" });
+      const userSnap = await getDoc(userRef);
+  
+      if (userSnap.exists()) {
+        const existingData = userSnap.data();
+        const updatedData = { ...existingData, ...formData }; // Merge old data with new
+        
+        await updateDoc(userRef, updatedData);
+        
+        setUser(updatedData);
+        setFormData(updatedData);
+        setIsEditing(false);
+        
+        // Store updated user data in localStorage
+        localStorage.setItem("user", JSON.stringify({ ...updatedData, firestoreId: uid }));
+  
+        setAlert({ message: "Profile updated successfully!", type: "success" });
+      } else {
+        console.warn("User document not found in Firestore.");
+      }
     } catch (error) {
       console.error("Error updating user data:", error);
       setAlert({ message: "Failed to update profile.", type: "error" });
     }
   };
+  
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -202,10 +232,10 @@ function UserProfile() {
                 </>
               ) : (
                 <>
-                  <p className="text-gray-700 dark:text-gray-300"><strong>Name:</strong> {user.displayName || "N/A"}</p>
-                  <p className="text-gray-700 dark:text-gray-300"><strong>Email:</strong> {user.email || "N/A"}</p>
-                  <p className="text-gray-700 dark:text-gray-300"><strong>Phone:</strong> {user.phoneNumber || "N/A"}</p>
-                  <p className="text-gray-700 dark:text-gray-300"><strong>Address:</strong> {user.address || "N/A"}</p>
+                  <p className="text-gray-700 dark:text-gray-300"><strong>Name:</strong> {user.displayName || ""}</p>
+                  <p className="text-gray-700 dark:text-gray-300"><strong>Email:</strong> {user.email || ""}</p>
+                  <p className="text-gray-700 dark:text-gray-300"><strong>Phone:</strong> {user.phoneNumber || ""}</p>
+                  <p className="text-gray-700 dark:text-gray-300"><strong>Address:</strong> {user.address || ""}</p>
                   <p className="text-gray-700 dark:text-gray-300"><strong>Gender:</strong> {user.gender || ""}</p>
                   
                   

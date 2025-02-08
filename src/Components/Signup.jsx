@@ -79,8 +79,8 @@ function Signup() {
         phoneNumber: authUser.phoneNumber || "",
         displayName: authUser.displayName || "User",
         email: authUser.email || "",
-        address: authUser.address || "N/A",
-        gender: authUser.gender || "N/A",
+        address: authUser.address || "",
+        gender: authUser.gender || "",
         createdAt: new Date(),
       };
   
@@ -183,8 +183,8 @@ function Signup() {
         displayName: result.user.displayName,
         email: result.user.email,
         phoneNumber: result.user.phoneNumber || "",
-        address: "N/A",  // You can add a form to collect this later
-        gender: "N/A",   // Same as above
+        address: "",  // You can add a form to collect this later
+        gender: "",   // Same as above
       };
   
       await storeUserData(googleUser);

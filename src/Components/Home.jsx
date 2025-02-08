@@ -7,7 +7,7 @@ import LoanCatagories from "./LoanCatagories"
 function Home() {
   return (
     
-    <div className="h-screen w-full bg-gray-100 dark:bg-gray-900">
+    <div className="h-screen w-full bg-gray-50 dark:bg-gray-900">
     <SliderBanner autoPlay={true} interval={4000}>
       <Page1></Page1>
       <Page2></Page2>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaSun, FaMoon } from "react-icons/fa";
 import logo from "./../assets/MainLogo.png";
+import logo2 from "./../assets/Logo2.png";
 import Signup from "./Signup";
 import AlertMessage from "./Alert";
 import UserProfile from "./UserProfile";
@@ -37,10 +38,21 @@ function Navigation() {
 
   return (
     <>
-      <nav className="h-[9%] md:h-[10%] fixed z-50 w-full flex items-center justify-between bg-white dark:bg-gray-900 dark:text-white transition-all duration-300 px-4 md:px-10 shadow-md">
+      <nav className="h-[9%] md:h-[10%] fixed z-50 w-full flex items-center justify-between bg-white dark:bg-[#000000] dark:text-white transition-all duration-300 px-4 md:px-10 shadow-md">
         {/* Logo */}
         <div className="flex items-center h-full">
-          <img src={logo} alt="LoanKarade" className="h-[60%] md:h-12 w-auto" />
+        {darkMode ? 
+        <img
+            src={logo2} // Switch logo based on dark mode
+            alt="LoanKarade"
+            className="h-[60%]  md:h-12 w-auto transition-all duration-300"/> 
+            : 
+          <img
+          src={logo}// Switch logo based on dark mode
+          alt="LoanKarade"
+          className="h-[60%] md:h-12 w-auto transition-all duration-300"
+        />}
+          
         </div>
 
         {/* Actions: Theme Toggle & Sign Up / Log Out */}

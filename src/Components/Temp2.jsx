@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { cities } from "./City"; // Import cities list
+import { indianStates } from "./State"; // Import states list
 
-const CitySelector = () => {
+const StateSelector = () => {
   const [inputValue, setInputValue] = useState("");
-  const [filteredCities, setFilteredCities] = useState([]);
+  const [filteredStates, setFilteredStates] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [user, setUser] = useState(null);
 
@@ -20,23 +20,23 @@ const CitySelector = () => {
     setInputValue(value);
 
     if (value.length > 0) {
-      const filtered = cities.filter((city) =>
-        city.toLowerCase().startsWith(value.toLowerCase())
+      const filtered = indianStates.filter((state) =>
+        state.toLowerCase().startsWith(value.toLowerCase())
       );
-      setFilteredCities(filtered);
+      setFilteredStates(filtered);
       setShowDropdown(true);
     } else {
-      setFilteredCities([]);
+      setFilteredStates([]);
       setShowDropdown(false);
     }
   };
 
-  const handleSelectCity = (city) => {
-    setInputValue(city);
+  const handleSelectState = (state) => {
+    setInputValue(state);
     setShowDropdown(false);
 
     if (user) {
-      const updatedUser = { ...user, city };
+      const updatedUser = { ...user, state };
       setUser(updatedUser);
       localStorage.setItem("user", JSON.stringify(updatedUser));
     }
@@ -49,7 +49,7 @@ const CitySelector = () => {
         type="text"
         value={inputValue}
         onChange={handleInputChange}
-        placeholder="Search city..."
+        placeholder="Search States..."
         className="w-full p-3 border rounded bg-white dark:bg-gray-800 dark:text-white 
         border-gray-700 dark:border-gray-200 focus:outline-none focus:ring-2 
         focus:ring-blue-500 dark:focus:ring-blue-400"
@@ -59,14 +59,14 @@ const CitySelector = () => {
       {showDropdown && (
         <ul className="absolute w-full bg-white dark:bg-gray-900 rounded mt-1 
         max-h-40 overflow-y-auto z-10 border border-gray-200 dark:border-gray-700 shadow-lg">
-          {filteredCities.length > 0 ? (
-            filteredCities.map((city, index) => (
+          {filteredStates.length > 0 ? (
+            filteredStates.map((state, index) => (
               <li
                 key={index}
-                onClick={() => handleSelectCity(city)}
+                onClick={() => handleSelectState(state)}
                 className="p-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
               >
-                {city}
+                {state}
               </li>
             ))
           ) : (
@@ -78,4 +78,4 @@ const CitySelector = () => {
   );
 };
 
-export default CitySelector;
+export default StateSelector;
