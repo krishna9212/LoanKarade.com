@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom"; // Import useLocation
 import { FaSun, FaMoon } from "react-icons/fa";
 import logo from "./../assets/MainLogo.png";
 import logo2 from "./../assets/Logo2.png";
@@ -16,8 +17,10 @@ function Navigation() {
   const [user, setUser] = useState(null);
   const [alert, setAlert] = useState(null);
   const [ShowUser, setShowUser] = useState(false);
+  const [loading, setLoading] = useState(false); // Loading state
 
-  // Apply theme preference on mount
+  const location = useLocation();
+
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -28,7 +31,6 @@ function Navigation() {
     }
   }, [darkMode]);
 
-  // Check for stored user data
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -36,12 +38,24 @@ function Navigation() {
     }
   }, []);
 
+  useEffect(() => {
+    if (location.pathname === "/") {
+      setLoading(true);
+      setTimeout(() => setLoading(false), 500);
+    }
+  }, [location.pathname]);
+
   return (
     <>
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center backdrop-blur-xs z-50">
+          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-blue-500"></div>
+        </div>
+      )}
       <nav className="h-[9%] md:h-[10%] fixed z-50 w-full flex items-center justify-between bg-white dark:bg-[#000000] dark:text-white transition-all duration-300 px-4 md:px-10 shadow-md">
-        {/* Logo */}
         <div className="flex items-center h-full">
-        {darkMode ? 
+          <Link to="/" className="w-full h-full flex items-center"> 
+          {darkMode ? 
         <img
             src={logo2} // Switch logo based on dark mode
             alt="LoanKarade"
@@ -52,12 +66,10 @@ function Navigation() {
           alt="LoanKarade"
           className="h-[60%] md:h-12 w-auto transition-all duration-300"
         />}
-          
+          </Link>
         </div>
 
-        {/* Actions: Theme Toggle & Sign Up / Log Out */}
         <div className="flex items-center space-x-3 md:space-x-6 pt-2">
-          {/* Dark Mode Toggle */}
           <button
             onClick={() => setDarkMode(!darkMode)}
             className="px-[9px] py-[11.3px] rounded-md transition-all duration-1000 border-[0.4px] border-gray-400 dark:bg-gray-900 dark:hover:bg-transparent hover:bg-gray-200 flex items-center justify-center"
@@ -69,7 +81,6 @@ function Navigation() {
             )}
           </button>
 
-          {/* Conditionally render Sign Up / User Profile */}
           {!user ? (
             <button
               onClick={() => setShowModal(true)}
@@ -88,7 +99,6 @@ function Navigation() {
         </div>
       </nav>
 
-      {/* User Profile Modal */}
       {ShowUser && (
         <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 backdrop-blur-xs z-10 pointer-events-auto">
           <div className="w-min-[95%] md:w-min-[60%] rounded-xl overflow-hidden h-[55%] md:h-[65%] bg-gray-200 dark:bg-gray-800 relative">
@@ -103,7 +113,6 @@ function Navigation() {
         </div>
       )}
 
-      {/* Signup Modal */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 backdrop-blur-xs z-10 pointer-events-auto">
           <div className="w-[95%] md:w-[60%] rounded-xl overflow-hidden h-[50%] md:h-[76%] bg-white dark:bg-gray-800 shadow-lg relative">
@@ -118,7 +127,6 @@ function Navigation() {
         </div>
       )}
 
-      {/* Alert Message */}
       {alert && (
         <div className="alert text-lg font-light">
           <AlertMessage message={alert.message} type={alert.type} onClose={() => setAlert(null)} />

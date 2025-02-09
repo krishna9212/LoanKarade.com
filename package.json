@@ -12,10 +12,12 @@
   "dependencies": {
     "@coreui/coreui": "^5.2.0",
     "@coreui/react": "^5.4.1",
+    "@emailjs/browser": "^4.4.1",
     "@mobiscroll/react-lite": "^4.10.9",
     "@tailwindcss/vite": "^4.0.3",
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
+    "emailjs-com": "^3.2.0",
     "firebase": "^10.0.0",
     "firebaseui": "^6.1.0",
     "font-awesome": "^4.7.0",

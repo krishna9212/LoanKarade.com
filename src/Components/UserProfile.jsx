@@ -10,7 +10,7 @@ function UserProfile() {
   const [loading, setLoading] = useState(true);
   const [uid, setUid] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ displayName: "", email: "", phoneNumber: "", address: "", gender: "" });
+  const [formData, setFormData] = useState({});
   const [alert, setAlert] = useState(null);
 
   const avatars = { male, female, other };
@@ -42,6 +42,7 @@ function UserProfile() {
             loanAmount: parsedUser.loanAmount || "",
             PositionInCompany: parsedUser.PositionInCompany || "",
             CatagoryOfBusiness: parsedUser.CatagoryOfBusiness || "",
+            TotalEmiYouPayPerMonth: parsedUser.TotalEmiYouPayPerMonth || "",
           });
         } else {
           console.warn("No Firestore document ID found in localStorage. Checking Firestore...");

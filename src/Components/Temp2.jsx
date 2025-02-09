@@ -5,15 +5,10 @@ const StateSelector = () => {
   const [inputValue, setInputValue] = useState("");
   const [filteredStates, setFilteredStates] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [user, setUser] = useState(null);
-
-  // Load user data from localStorage when component mounts
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
+  const [user, setUser] = useState(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user")) || {}; // Ensure an object
+    return storedUser;
+  });
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -35,11 +30,9 @@ const StateSelector = () => {
     setInputValue(state);
     setShowDropdown(false);
 
-    if (user) {
-      const updatedUser = { ...user, state };
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-    }
+    const updatedUser = { ...user, state }; // Merge existing user data
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser)); // Update only state field
   };
 
   return (
