@@ -5,7 +5,7 @@ import StateSelector from "./Temp2";
 import emailjs from "@emailjs/browser";
 import { useNavigate } from "react-router-dom";
 
-const MultiStepForm = () => {
+const MultiStepForm2 = () => {
   const navigate = useNavigate();
   const storedData = JSON.parse(localStorage.getItem("user")) || {};
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -31,13 +31,15 @@ const MultiStepForm = () => {
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
-    const newValue = type === "number" && value !== "" ? Number(value) : value.trim();
-
+    const newValue = type === "number" && value !== "" ? Number(value) : value;
+  
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: newValue,
+      [name]: newValue, // Do NOT trim inside here
     }));
   };
+
+  
 
   const submit = (e) => {
     e.preventDefault();
@@ -96,48 +98,61 @@ const MultiStepForm = () => {
     navigate("/"); // Navigate back to home route
   };
 
+  useEffect(() => {
+    console.log("Updated formData:", formData);
+  }, [formData]);
   
 
   const nextStep = () => {
     if (step === 1) {
-      if (!formData.name.trim() || !formData.gender.trim()  || !formData.email.trim() || !formData.phone.trim() || !formData.address.trim()) {
-        alert("❌ Please fill in all required fields.");
-        return;
-      }
-    }
+  const requiredFields = ["name", "gender", "state", "city", "email", "phone", "address"];
 
+  for (let field of requiredFields) {
+    if (!formData[field] || formData[field].toString().trim() === "") {
+      alert(`❌ Please fill in all required fields.`);
+      return;
+    }
+  }
+}
+
+  
     if (step === 2 && !formData.employmentType) {
       alert("❌ Please select an employment type.");
       return;
     }
-
+  
     if (step === 3 && formData.employmentType === "salaried") {
-      if (!formData.company.trim() || !formData.PositionInCompany.trim() || formData.TotalEmiYouPayPerMonth === "") {
-        alert("❌ Please fill in all required fields.");
-        return;
+      const requiredSalariedFields = ["company", "PositionInCompany", "TotalEmiYouPayPerMonth"];
+      for (let field of requiredSalariedFields) {
+        if (!formData[field] || formData[field].trim() === "") {
+          alert("❌ Please fill in all required fields.");
+          return;
+        }
       }
     }
-
+  
     if (step === 3 && formData.employmentType === "business") {
-      if (!formData.businessName.trim() || !formData.CatagoryOfBusiness.trim() || formData.TotalEmiYouPayPerMonth === "") {
-        alert("❌ Please fill in all required fields.");
-        return;
+      const requiredBusinessFields = ["businessName", "CatagoryOfBusiness", "TotalEmiYouPayPerMonth"];
+      for (let field of requiredBusinessFields) {
+        if (!formData[field] || formData[field].trim() === "") {
+          alert("❌ Please fill in all required fields.");
+          return;
+        }
       }
     }
-
+  
     if (step === 4 && !formData.grossIncome) {
       alert("❌ Please select a gross annual income.");
       return;
     }
-
+  
     if (step === 5 && !formData.loanAmount) {
       alert("❌ Please enter the loan amount.");
       return;
     }
-
+  
     if (step === 6) {
       const updatedFormData = { ...formData };
-
       if (formData.employmentType === "salaried") {
         updatedFormData.businessName = "";
         updatedFormData.CatagoryOfBusiness = "";
@@ -145,15 +160,15 @@ const MultiStepForm = () => {
         updatedFormData.company = "";
         updatedFormData.PositionInCompany = "";
       }
-
       setFormData(updatedFormData);
       console.log("✅ Updated Form Data:", JSON.stringify(updatedFormData, null, 2));
     }
-
+  
     if (step < 7) {
       setStep(step + 1);
     }
   };
+  
 
   const prevStep = () => {
     if (step > 1) {
@@ -174,7 +189,7 @@ const MultiStepForm = () => {
         </div>
       </div>
 
-      <form className="bg-white  dark:bg-gray-800 p-6 rounded-lg shadow-xl md:w-[80%] w-full" onSubmit={()=>submit()}>
+      <form className="bg-white  dark:bg-gray-800 p-6 rounded-lg shadow-xl md:w-[80%] w-full" onSubmit={()=>submit()} action="post">
         {/* Step 1: Basic Info */}
         {step === 1 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -200,8 +215,6 @@ const MultiStepForm = () => {
               type="tel"
               name="phone"
               placeholder="Phone Number"
-              minLength={10}
-              maxLength={10}
               value={formData.phone}
               onChange={handleChange}
               className="w-full p-3 mb-4 border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
@@ -489,4 +502,4 @@ const MultiStepForm = () => {
   );
 };
 
-export default MultiStepForm;
+export default MultiStepForm2;

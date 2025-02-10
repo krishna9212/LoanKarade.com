@@ -55,11 +55,11 @@ function LoanCategories() {
 
   const categories = [
     { id: 1, name: "Personal Loan", icon: PersonalLoan, summary: "Select the best offer curated just for you from a wide choice of Banks & NBFCs.", buttonName: "Check Eligibility", route: "/personal-loan" },
-    { id: 2, name: "Business Loan", icon: LoanImg3, summary: "Expand your business with loans at low interest rates.", buttonName: "Check Eligibility", route: "/business-loan" },
-    { id: 3, name: "Micro Loans (Under ₹50K)", icon: MicroLoan, summary: "Instant small ticket loans to meet your immediate cash needs", buttonName: "Get Instant Loan", route: "/micro-loan" },
+    { id: 2, name: "Business Loan", icon: LoanImg3, summary: "Expand your business with loans at low interest rates.", buttonName: "Check Eligibility", route: "/business-loan"},
+    { id: 3, name: "Credit Card", icon: MicroLoan, summary: "Instant small ticket loans to meet your immediate cash needs", buttonName: "Get Instant Loan", route: "/Credit-Card" },
     { id: 4, name: "Home Loan", icon: LoanImg4, summary: "Choose from lowest interest rates available for your dream home", buttonName: "Check Eligibility", route: "/home-loan" },
-    { id: 5, name: "Gold Loan", icon: LoanImg, summary: "Get loan against your gold at best interest rates with our doorstep service", buttonName: "Know More", route: "/gold-loan" },
-    { id: 6, name: "Loan Against Mutual funds", icon: LoanImg2, summary: "Get best loan offer against your mutual fund portfolio", buttonName: "Apply Now", route: "/loan-mutual-fund" },
+    { id: 5, name: "Loan Against Property", icon: LoanImg, summary: "Get loan against your gold at best interest rates with our doorstep service", buttonName: "Know More", route: "/Loan-Against-Property" },
+    { id: 6, name: "Used Car Loan", icon: LoanImg2, summary: "Get best loan offer against your mutual fund portfolio", buttonName: "Apply Now", route: "/Used-Car-Loan" },
   ];
 
   return (

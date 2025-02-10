@@ -2,12 +2,12 @@ import React from "react";
 import MultiStepForm from "./Form";
 import { FaCheck } from "react-icons/fa";  // FontAwesome
 import svg from "./../assets/Banknote-rafiki.png"
-const BusinessLoan = () => {
+const HomeLoan = () => {
   return (
     <div className="h-screen w-screen flex flex-col md:flex-row items-center justify-center">
       <div className="LEFT w-full hidden md:flex bg-blue-100 dark:bg-gray-800 text-black dark:text-white justify-center overflow-hidden md:w-1/2 md:h-full items-center p-10  ">
       <div className="banner h-[70%] flex flex-col ">
-        <h1 className="poppins-semibold text-2xl">Personal Loan</h1>
+        <h1 className="poppins-semibold text-2xl">Business Loan</h1>
         <div className="div flex w-full h-full flex-col   gap-3   mt-3">
 
         {
@@ -23,9 +23,9 @@ const BusinessLoan = () => {
 
       </div>
       </div>
-      <div className="RIGHT w-full overflow-x-hidden  h-[100%] md:w-1/2 md:h-full flex items-start   md:items-center justify-center "><MultiStepForm></MultiStepForm></div>
+      <div className="RIGHT w-full overflow-hidden h-[100%] md:w-1/2 md:h-full flex items-start   md:items-center justify-center overflow-x-hidden "><MultiStepForm></MultiStepForm></div>
     </div>
   );
 };
 
-export default BusinessLoan; // ✅ Ensure this default export is present
+export default HomeLoan; 

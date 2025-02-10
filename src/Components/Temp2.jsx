@@ -1,20 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { indianStates } from "./State"; // Import states list
 
 const StateSelector = () => {
   const [inputValue, setInputValue] = useState("");
   const [filteredStates, setFilteredStates] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [user, setUser] = useState(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user")) || {}; // Ensure an object
-    return storedUser;
-  });
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const savedUser = JSON.parse(localStorage.getItem("user")) || {};
+    if (savedUser.state) {
+      setInputValue(savedUser.state);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleInputChange = (e) => {
     const value = e.target.value;
     setInputValue(value);
 
-    if (value.length > 0) {
+    if (value.trim().length > 0) {
       const filtered = indianStates.filter((state) =>
         state.toLowerCase().startsWith(value.toLowerCase())
       );
@@ -28,15 +42,12 @@ const StateSelector = () => {
 
   const handleSelectState = (state) => {
     setInputValue(state);
+    localStorage.setItem("user", JSON.stringify({ state })); // Update localStorage immediately
     setShowDropdown(false);
-
-    const updatedUser = { ...user, state }; // Merge existing user data
-    setUser(updatedUser);
-    localStorage.setItem("user", JSON.stringify(updatedUser)); // Update only state field
   };
 
   return (
-    <div className="relative w-full mb-4 rounded text-gray-700 dark:text-gray-200">
+    <div className="relative w-full mb-4 rounded text-gray-700 dark:text-gray-200" ref={dropdownRef}>
       {/* Input Field */}
       <input
         type="text"

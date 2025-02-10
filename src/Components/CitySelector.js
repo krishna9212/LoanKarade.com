@@ -1,34 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
-import { cities } from "./City"; // Import cities list
+import React, { useState } from "react";
+import { cities } from "./City";
+import { useFormContext } from "./FormContext";
 
 const CitySelector = () => {
-  const [inputValue, setInputValue] = useState("");
+  const { formData, updateFormData } = useFormContext();
+  const [inputValue, setInputValue] = useState(formData.city || "");
   const [filteredCities, setFilteredCities] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    const savedUser = JSON.parse(localStorage.getItem("user")) || {};
-    if (savedUser.city) {
-      setInputValue(savedUser.city);
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const handleInputChange = (e) => {
     const value = e.target.value;
     setInputValue(value);
 
-    if (value.trim().length > 0) {
+    if (value.length > 0) {
       const filtered = cities.filter((city) =>
         city.toLowerCase().startsWith(value.toLowerCase())
       );
@@ -42,13 +26,12 @@ const CitySelector = () => {
 
   const handleSelectCity = (city) => {
     setInputValue(city);
-    localStorage.setItem("user", JSON.stringify({ city })); // Update localStorage immediately
     setShowDropdown(false);
+    updateFormData("city", city);
   };
 
   return (
-    <div className="relative w-full mb-4 rounded text-gray-700 dark:text-gray-200" ref={dropdownRef}>
-      {/* Input Field */}
+    <div className="relative w-full mb-4 rounded text-gray-700 dark:text-gray-200">
       <input
         type="text"
         value={inputValue}
@@ -58,8 +41,6 @@ const CitySelector = () => {
         border-gray-700 dark:border-gray-200 focus:outline-none focus:ring-2 
         focus:ring-blue-500 dark:focus:ring-blue-400"
       />
-
-      {/* Dropdown List */}
       {showDropdown && (
         <ul className="absolute w-full bg-white dark:bg-gray-900 rounded mt-1 
         max-h-40 overflow-y-auto z-10 border border-gray-200 dark:border-gray-700 shadow-lg">

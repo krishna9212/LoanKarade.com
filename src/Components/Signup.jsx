@@ -68,58 +68,48 @@ function Signup() {
 
   const storeUserData = async (authUser) => {
     try {
-      const usersRef = collection(db, "users");
-  
-      // 1. Query by email FIRST
-      let q = query(usersRef, where("email", "==", authUser.email || ""));
-      let querySnapshot = await getDocs(q);
-  
-      let firestoreId;
-      let userData = {
-        phoneNumber: authUser.phoneNumber || "",
-        displayName: authUser.displayName || "User",
-        email: authUser.email || "",
-        address: authUser.address || "",
-        gender: authUser.gender || "",
-        createdAt: new Date(),
-      };
-  
-  
-      if (!querySnapshot.empty) {
-        // User found by email, update that document
-        const existingUser = querySnapshot.docs[0];
-        firestoreId = existingUser.id;
-        await setDoc(doc(db, "users", firestoreId), userData, { merge: true });
-        console.log("User updated by email:", userData);
-  
-      } else {
-        // 2. If no email match, query by phone number
-        q = query(usersRef, where("phoneNumber", "==", authUser.phoneNumber || ""));
-        querySnapshot = await getDocs(q);
-  
+        const usersRef = collection(db, "users");
+
+        // Query to check if the user exists using BOTH email and phone number
+        let q = query(usersRef, 
+            where("email", "==", authUser.email || ""),
+            where("phoneNumber", "==", authUser.phoneNumber || "")
+        );
+        let querySnapshot = await getDocs(q);
+        
+        let firestoreId;
+        let userData = {
+            phoneNumber: authUser.phoneNumber || "",
+            displayName: authUser.displayName || "User",
+            email: authUser.email || "",
+            address: authUser.address || "",
+            gender: authUser.gender || "",
+            createdAt: new Date(),
+        };
+        
         if (!querySnapshot.empty) {
-          // User found by phone, update that document
-          const existingUser = querySnapshot.docs[0];
-          firestoreId = existingUser.id;
-          await setDoc(doc(db, "users", firestoreId), userData, { merge: true });
-          console.log("User updated by phone:", userData);
-  
+            // If a matching user is found, update the existing record
+            const existingUser = querySnapshot.docs[0];
+            firestoreId = existingUser.id;
+            await setDoc(doc(db, "users", firestoreId), userData, { merge: true });
+            console.log("User updated:", userData);
         } else {
-          // User not found by either email or phone, create new document
-          const newUserRef = await addDoc(usersRef, userData);
-          firestoreId = newUserRef.id;
-          console.log("New user created:", userData);
+            // Create a new document with a unique Firestore ID
+            const newUserRef = await addDoc(usersRef, userData);
+            firestoreId = newUserRef.id;
+            console.log("New user created:", userData);
         }
-      }
-  
-      userData.firestoreId = firestoreId;
-      localStorage.setItem("user", JSON.stringify(userData));
-      setUser(userData);
-  
+        
+        // Save the correct user ID
+        userData.firestoreId = firestoreId;
+        localStorage.setItem("user", JSON.stringify(userData));
+        setUser(userData);
     } catch (error) {
-      console.error("Error storing user data:", error);
+        console.error("Error storing user data:", error);
     }
-  };
+};
+
+
 
 
   const handleSendOtp = async (e) => {

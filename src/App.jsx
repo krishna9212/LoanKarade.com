@@ -6,6 +6,13 @@ import Cursor from "./Components/Cursor";
 import Home from "./Components/Home";
 import LoanCategories from "./Components/LoanCatagories";
 import PersonalLoan from "./Components/PersonalLoan";
+import BusinessLoan from "./Components/BusinessLoan";
+import CreditCard from "./Components/CreditCard";
+import HomeLoan from "./Components/HomeLoan"
+import LoanAgainstProperty from "./Components/LoanAgainstProperty"
+import UsedCarLoan from "./Components/UsedCarLoan";
+
+// import UsedCarLoan from "./Components/UsedCarLoan"
 function App() {
   return (
     // <testEmail/>
@@ -17,6 +24,12 @@ function App() {
            <Route path="/" element={<Home />} />
            <Route path="/loan-categories" element={<LoanCategories />} />
            <Route path="/personal-loan" element={<PersonalLoan />} />
+           <Route path="/business-loan" element={<BusinessLoan />} />
+           <Route path="/credit-card" element={<CreditCard/>} />
+           <Route path="/home-loan" element={<HomeLoan/>} />
+           <Route path="/Loan-Against-Property" element={<LoanAgainstProperty/>} />
+           <Route path="/Used-Car-Loan" element={<UsedCarLoan/>} />
+
          </Routes>
 
          <div className="cur hidden md:block">

@@ -2,7 +2,7 @@ import React from "react";
 import MultiStepForm from "./Form";
 import { FaCheck } from "react-icons/fa";  // FontAwesome
 import svg from "./../assets/Banknote-rafiki.png"
-const BusinessLoan = () => {
+const UsedCarLoan = () => {
   return (
     <div className="h-screen w-screen flex flex-col md:flex-row items-center justify-center">
       <div className="LEFT w-full hidden md:flex bg-blue-100 dark:bg-gray-800 text-black dark:text-white justify-center overflow-hidden md:w-1/2 md:h-full items-center p-10  ">
@@ -28,4 +28,4 @@ const BusinessLoan = () => {
   );
 };
 
-export default BusinessLoan; // ✅ Ensure this default export is present
+export default UsedCarLoan; // ✅ Ensure this default export is present

@@ -1,7 +1,8 @@
 import React from "react";
 import MultiStepForm from "./Form";
-import { FaCheck } from "react-icons/fa";  // FontAwesome
+import { FaCheck } from "react-icons/fa";  
 import svg from "./../assets/Banknote-rafiki.png"
+
 const PersonalLoan = () => {
   return (
     <div className="h-screen w-screen flex flex-col md:flex-row items-center justify-center">
