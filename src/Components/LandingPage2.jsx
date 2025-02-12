@@ -4,7 +4,7 @@ function Page2() {
   return (
     <div className=' h-min-full w-full '>
             <div className=' h-min-[100%]  mt-20 md:-mt-0 md:-mb-10  md:pt-0  p-5 w-full bg-green-100 dark:bg-gray-800 items-center flex md:flex-row'>
-                <div className="left h-min-full z-0 -mb-5    p-1 md:mb-10  md:-mt-10 md:h-full w-[72%]  md:w-[50%]     flex flex-col   md:p-10 md:pt-50  justify-center  text-black dark:text-white">
+                <div className="left h-min-full z-0  md:mb-10  md:-mt-10 md:h-full w-[72%]  md:w-[50%]     flex flex-col   md:p-10 md:pt-50  justify-center  text-black dark:text-white">
                     <h1 className='text-[1.4rem] md:text-[4.2rem] whitespace-nowrap poppins-bold '>Personal Loans</h1> 
                     <h1 className='md:text-[1.6rem] text-[0.6rem]  whitespace-wrap poppins-semibold  md:-mt-2'>
                     Made <span className='text-[#018FCF] tracking-wide '>Easy</span> – Fast, Secure & Affordable!

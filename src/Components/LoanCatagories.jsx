@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
 import PersonalLoan from "./../assets/PersonalLoan.png";
 import MicroLoan from "./../assets/MicroLoan.png";
-import LoanImg from "./../assets/Loann.png";
-import LoanImg2 from "./../assets/Loan2.png";
+import LoanImg from "./../assets/assets.png";
+import LoanImg2 from "./../assets/car-loan.png";
 import LoanImg3 from "./../assets/Loan3.png";
-import LoanImg4 from "./../assets/Home Loan.png";
+import LoanImg4 from "./../assets/loan.png";
+import LoanImg5 from "./../assets/debit-card.png";
 
 function LoanCategories() {
   const navigate = useNavigate();
@@ -54,14 +55,56 @@ function LoanCategories() {
   };
 
   const categories = [
-    { id: 1, name: "Personal Loan", icon: PersonalLoan, summary: "Select the best offer curated just for you from a wide choice of Banks & NBFCs.", buttonName: "Check Eligibility", route: "/personal-loan" },
-    { id: 2, name: "Business Loan", icon: LoanImg3, summary: "Expand your business with loans at low interest rates.", buttonName: "Check Eligibility", route: "/business-loan"},
-    { id: 3, name: "Credit Card", icon: MicroLoan, summary: "Instant small ticket loans to meet your immediate cash needs", buttonName: "Get Instant Loan", route: "/Credit-Card" },
-    { id: 4, name: "Home Loan", icon: LoanImg4, summary: "Choose from lowest interest rates available for your dream home", buttonName: "Check Eligibility", route: "/home-loan" },
-    { id: 5, name: "Loan Against Property", icon: LoanImg, summary: "Get loan against your gold at best interest rates with our doorstep service", buttonName: "Know More", route: "/Loan-Against-Property" },
-    { id: 6, name: "Used Car Loan", icon: LoanImg2, summary: "Get best loan offer against your mutual fund portfolio", buttonName: "Apply Now", route: "/Used-Car-Loan" },
+    { 
+      id: 1, 
+      name: "Personal Loan", 
+      icon: PersonalLoan, 
+      summary: "Secure and hassle-free loans tailored to your needs. Backed by trusted Banks & NBFCs.", 
+      buttonName: "Check Eligibility", 
+      route: "/personal-loan" 
+    },
+    { 
+      id: 2, 
+      name: "Business Loan", 
+      icon: LoanImg3, 
+      summary: "Grow your business with confidence. Loans at low interest rates from reliable sources.", 
+      buttonName: "Check Eligibility", 
+      route: "/business-loan"
+    },
+    { 
+      id: 3, 
+      name: "Credit Card", 
+      icon: LoanImg5, 
+      summary: "Instant and secure cash solutions for your urgent needs. Your trust, our priority.", 
+      buttonName: "Get Instant Loan", 
+      route: "/Credit-Card" 
+    },
+    { 
+      id: 4, 
+      name: "Home Loan", 
+      icon: LoanImg4, 
+      summary: "Make your dream home a reality with the lowest interest rates and complete transparency.", 
+      buttonName: "Check Eligibility", 
+      route: "/home-loan" 
+    },
+    { 
+      id: 5, 
+      name: "Loan Against Property", 
+      icon: LoanImg, 
+      summary: "Unlock the value of your property with secured loans at competitive rates.", 
+      buttonName: "Know More", 
+      route: "/Loan-Against-Property" 
+    },
+    { 
+      id: 6, 
+      name: "Used Car Loan", 
+      icon: LoanImg2, 
+      summary: "Own your dream car with secure loans and the best offers tailored for you.", 
+      buttonName: "Apply Now", 
+      route: "/Used-Car-Loan" 
+    },
   ];
-
+  
   return (
     <div className="h-screen w-full p-5 bg-white dark:bg-gray-900 overflow-hidden flex flex-col">
       {errorMessage && <AlertMessage message={errorMessage} onClose={() => setErrorMessage("")} />}
@@ -81,7 +124,7 @@ function LoanCategories() {
         </div>
 
         {/* Loan Category Grid */}
-        <div className="grid grid-cols-3 md:grid-cols-5 gap-4 w-full mt-6 bg-white dark:bg-gray-900">
+        <div className="grid grid-cols-3 md:grid-cols-3 gap-5 w-full mt-6 bg-white dark:bg-gray-900">
           {categories.map((category) => (
             <div
               key={category.id}
@@ -90,12 +133,12 @@ function LoanCategories() {
             >
               {/* Top Section */}
               <div className="flex w-full flex-col-reverse md:flex-row items-center justify-center gap-1 md:gap-3">
-                <h2 className="text-[0.62rem] w-[95%] md:w-[40%] text-center md:text-[0.8rem] poppins-medium">{category.name}</h2>
+                <h2 className="text-[0.62rem] w-[100%] md:w-[40%] text-center md:text-[0.8rem] poppins-medium">{category.name}</h2>
                 <img src={category.icon} 
                 alt={category.name} 
                 loading="lazy"
                 decoding="async" 
-                className="h-8.5 md:h-10  object-cover" />
+                className="h-7.5 p-[1px] md:p-0 md:h-9  object-cover" />
               </div>
 
               {/* Bottom Section */}
