@@ -15,7 +15,11 @@ function Page2() {
                         </div>
                 </div>
                 <div className="right h-full z-10 md:p-20 md:-mb-30  md:-mt-10 md:h-full  w-[47.7%] md:w-[50%]   md:pt-25 flex items-center justify-center">
-                  <img src={bank} alt="" className='w-auto mt-2 object-cover h-[170px] h-min-[180px] md:h-full ' />
+                  <img src={bank}
+                  alt="PersonalLoans"
+                  loading="lazy"
+                  decoding="async" 
+                  className='w-auto mt-2 object-cover h-[170px] h-min-[180px] md:h-full ' />
                 </div>
 
             </div>

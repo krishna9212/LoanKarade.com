@@ -29,7 +29,7 @@ function LoanCategories() {
 
     return (
       <div
-        className={`fixed top-18 right-2 px-6 py-2 rounded-lg text-white shadow-lg z-50 w-[80%] md:w-[25%] text-center 
+        className={`fixed top-18 right-2 px-6 py-2 rounded-lg text-white shadow-lg text-[0.8rem] md:text-[1rem] z-50 w-[65%] md:w-[20%] text-center 
           ${type === "success" ? "bg-green-500" : "bg-red-500"}`}
       >
         {message}
@@ -85,13 +85,17 @@ function LoanCategories() {
           {categories.map((category) => (
             <div
               key={category.id}
-              className="group bg-gray-50 md:bg-[#fbfafa] dark:bg-gray-800 loan-box w-min-full rounded-xl shadow-md flex flex-col justify-between items-center p-1 md:p-4 text-gray-800 dark:text-gray-100 transition-all duration-500 ease-in-out hover:shadow-xl cursor-pointer"
+              className="group bg-gray-50 md:bg-[#FBFAFA] dark:bg-gray-800 loan-box w-min-full rounded-xl shadow-md flex flex-col justify-between items-center p-1 md:p-4 text-gray-800 dark:text-gray-100 transition-all duration-500 ease-in-out hover:shadow-xl cursor-pointer"
               onClick={() => handleNavigation(category.route)}
             >
               {/* Top Section */}
               <div className="flex w-full flex-col-reverse md:flex-row items-center justify-center gap-1 md:gap-3">
-                <h2 className="text-[0.65rem] w-[65%] md:w-[40%] text-center md:text-[0.8rem] poppins-medium">{category.name}</h2>
-                <img src={category.icon} alt={category.name} className="h-8 md:h-8 md:-mt-1 object-cover" />
+                <h2 className="text-[0.62rem] w-[95%] md:w-[40%] text-center md:text-[0.8rem] poppins-medium">{category.name}</h2>
+                <img src={category.icon} 
+                alt={category.name} 
+                loading="lazy"
+                decoding="async" 
+                className="h-8.5 md:h-10  object-cover" />
               </div>
 
               {/* Bottom Section */}

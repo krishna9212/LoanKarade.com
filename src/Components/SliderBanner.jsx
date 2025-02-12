@@ -5,20 +5,17 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 
-const SliderBanner = ({ children }) => {
+const SliderBanner = ({ children, spaceBetween = 2, slidesPerView = 1, autoplayDelay = 5000 }) => {
   return (
-    
-
     <Swiper
       modules={[Navigation, Pagination, Autoplay]}
-      spaceBetween={50}
-      slidesPerView={1}
-      
+      spaceBetween={spaceBetween}
+      slidesPerView={slidesPerView}
       pagination={{ clickable: true }}
-      autoplay={{ delay: 5000, disableOnInteraction: false }}
-      className="custom-swiper "
-      >
-      {React.Children.map(children, (child, index) => (
+      autoplay={{ delay: autoplayDelay, disableOnInteraction: false }}
+      className="custom-swiper"
+    >
+      {React.Children.toArray(children).map((child, index) => (
         <SwiperSlide key={index}>{child}</SwiperSlide>
       ))}
     </Swiper>
