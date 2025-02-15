@@ -5,7 +5,7 @@ import bank from "./../assets/Contact us-cuate.png"
 function Page5() {
   return (
     <div className=' h-min-full w-full '>
-            <div className=' h-min-[100%]  mt-20 md:-mt-0 md:-mb-10  md:pt-0  p-5 w-full bg-blue-100 dark:bg-gray-800 items-center flex md:flex-row'>
+            <div className=' h-min-[100%]  mt-20 md:-mt-0 md:-mb-10  md:pt-0  p-5 w-full bg-blue-50 dark:bg-gray-800 items-center flex md:flex-row'>
                 <div className="left h-min-full md:mb-10 md:-mt-10 md:h-full w-[62%]  md:w-[50%] flex flex-col   md:p-10 md:pt-40  justify-center  text-black dark:text-white">
                     <h1 className='text-[1rem] md:text-[3.3rem] whitespace-nowrap poppins-bold '>Find Your Best Deal!</h1> 
                     <h1 className='md:text-[1.4rem] text-[0.7rem]  whitespace-wrap poppins-medium  '>

@@ -106,7 +106,7 @@ function LoanCategories() {
   ];
   
   return (
-    <div className="h-screen w-full p-5 bg-white dark:bg-gray-900 overflow-hidden flex flex-col">
+    <div className="h-min-screen w-full p-5 bg-white dark:bg-gray-900 overflow-hidden flex flex-col">
       {errorMessage && <AlertMessage message={errorMessage} onClose={() => setErrorMessage("")} />}
       
       {/* Loading Spinner */}

@@ -6,6 +6,7 @@ import Page3 from "./LandingPage3";
 import Page4 from "./LandingPage4";
 import Page5 from "./LandingPage5";
 import LoanCategories from "./LoanCatagories"; // Fixed the spelling for consistency
+import About from "./AboutUs";
 
 const Home = () => {
   const pages = [<Page1 />, <Page2 />, <Page3 />, <Page4 />,<Page5/>];
@@ -16,6 +17,8 @@ const Home = () => {
         {pages}
       </SliderBanner>
       <LoanCategories />
+      <About></About>
+      
     </div>
   );
 };
