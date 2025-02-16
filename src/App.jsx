@@ -18,7 +18,7 @@ function App() {
   return (
     <Router>
       {/* Flexbox for layout */}
-      <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900">
+      <div className="flex flex-col min-h-screen overflow-hidden bg-gray-100 dark:bg-gray-900">
         {/* Fixed Navigation */}
         <header className="z-50">
           <Navigation />

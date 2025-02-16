@@ -23,7 +23,7 @@ const CreditCard = () => {
 
       </div>
       </div>
-      <div className="RIGHT w-full overflow-hidden h-[100%] md:w-1/2 md:h-full flex items-start   md:items-center justify-center "><MultiStepForm></MultiStepForm></div>
+      <div className="RIGHT w-full overflow-x-hidden h-[100%] md:w-1/2 md:h-full flex items-start   md:items-center justify-center "><MultiStepForm></MultiStepForm></div>
     </div>
   );
 };
