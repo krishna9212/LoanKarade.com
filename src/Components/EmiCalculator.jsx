@@ -160,7 +160,7 @@ function EMICalculator() {
 
 
       {/* Right Side - Pie Chart */}
-      <div className="lg:w-1/2 w-[100%] mb-5  md:mb-0 shadow-lg rounded-lg p-4 md:p-9 flex flex-col items-center bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
+      <div className="lg:w-1/2 w-[100%] mb-5  md:mb-0 shadow-lg rounded-lg  md:p-9 flex flex-col items-center bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
         <h2 className="text-4xl pt-2 font-extrabold text-center mb-6 bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text">
           EMI Breakdown
         </h2>
