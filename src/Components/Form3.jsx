@@ -20,8 +20,10 @@ const MultiStepForm = () => {
     gender: storedData.gender || "",
     employmentType: storedData.employmentType || "",
     salary: storedData.salary || "",
+    company: storedData.company || "",
     grossIncome: storedData.grossIncome || "",
     loanAmount: storedData.loanAmount || "",
+    PositionInCompany: storedData.PositionInCompany || "",
     businessName: storedData.businessName || "",
     CatagoryOfBusiness: storedData.CatagoryOfBusiness || "",
     TotalEmiYouPayPerMonth: storedData.TotalEmiYouPayPerMonth || "",
@@ -53,6 +55,7 @@ const MultiStepForm = () => {
       city: formData.city || "N/A",
       state: formData.state || "N/A",
       gender: formData.gender || "N/A",
+      employmentType: formData.employmentType || "N/A",
       grossIncome: formData.grossIncome || "N/A",
       loanAmount: formData.loanAmount || "N/A",
       TotalEmiYouPayPerMonth: formData.TotalEmiYouPayPerMonth || "N/A",
@@ -60,9 +63,18 @@ const MultiStepForm = () => {
   
     let templateID = "";
   
+    if (formData.employmentType === "salaried") {
+      emailData.company = formData.company || "N/A";
+      emailData.PositionInCompany = formData.PositionInCompany || "N/A";
+      templateID = "template_efb60k3"; // Template for salaried employees
+    } else if (formData.employmentType === "business") {
       emailData.businessName = formData.businessName || "N/A";
       emailData.CatagoryOfBusiness = formData.CatagoryOfBusiness || "N/A";
-      templateID = "template_0f3x0wf";  
+      templateID = "template_0f3x0wf"; // Template for business owners
+    } else {
+      alert("❌ Invalid employment type.");
+      return;
+    }
   
     emailjs
       .send("service_0oddyfj", templateID, emailData, "pz6AHzoAuT68b19Ad")
@@ -93,31 +105,52 @@ const MultiStepForm = () => {
         return;
       }
     }
-  
-    if (step === 2 ) {
+
+    if (step === 2 && !formData.employmentType) {
+      alert("❌ Please select an employment type.");
+      return;
+    }
+
+    if (step === 3 && formData.employmentType === "salaried") {
+      if (!formData.company.trim() || !formData.PositionInCompany.trim() || formData.TotalEmiYouPayPerMonth === "") {
+        alert("❌ Please fill in all required fields.");
+        return;
+      }
+    }
+
+    if (step === 3 && formData.employmentType === "business") {
       if (!formData.businessName.trim() || !formData.CatagoryOfBusiness.trim() || formData.TotalEmiYouPayPerMonth === "") {
         alert("❌ Please fill in all required fields.");
         return;
       }
     }
 
-    if (step === 3 && !formData.grossIncome) {
+    if (step === 4 && !formData.grossIncome) {
       alert("❌ Please select a gross annual income.");
       return;
     }
 
-    if (step === 4 && !formData.loanAmount) {
+    if (step === 5 && !formData.loanAmount) {
       alert("❌ Please enter the loan amount.");
       return;
     }
 
-    if (step === 5) {
+    if (step === 6) {
       const updatedFormData = { ...formData };
+
+      if (formData.employmentType === "salaried") {
+        updatedFormData.businessName = "";
+        updatedFormData.CatagoryOfBusiness = "";
+      } else if (formData.employmentType === "business") {
+        updatedFormData.company = "";
+        updatedFormData.PositionInCompany = "";
+      }
+
       setFormData(updatedFormData);
       console.log("✅ Updated Form Data:", JSON.stringify(updatedFormData, null, 2));
     }
 
-    if (step < 6) {
+    if (step < 7) {
       setStep(step + 1);
     }
   };
@@ -200,9 +233,97 @@ const MultiStepForm = () => {
           </motion.div>
         )}
 
-      {step === 2 && (
+        {/* Step 2: Employment Type */}
+        {step === 2 && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Employment Type</h2>
+            <div className=" flex flex-col gap-2">
+
+            <div
+              className={`flex  items-start justify-start   gap-2 p-3 border     rounded  cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition ${
+                formData.employmentType === "salaried" ? "border-blue-500" : ""
+              }`}
+              onClick={() => setFormData({ ...formData, employmentType: "salaried" })}
+              >
+              <input type="radio" name="employmentType" className="mt-1 md:mt-[7px]" value="salaried" checked={formData.employmentType === "salaried"} onChange={handleChange} required/>
+              <div>
+                <label className="font-semibold text-gray-900 dark:text-white cursor-pointer">Salaried</label>
+                <p className="text-sm text-gray-500 ">For individuals receiving a fixed monthly salary.</p>
+              </div>
+            </div>
+
+            <div
+              className={`flex items-start gap-2 p-3 border rounded cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition mt-2 ${
+                formData.employmentType === "business" ? "border-blue-500" : ""
+              }`}
+              onClick={() => setFormData({ ...formData, employmentType: "business" })}
+              >
+              <input type="radio" name="employmentType" value="business"className="mt-1 md:mt-[7px]" checked={formData.employmentType === "business"} onChange={handleChange} required/>
+              <div>
+                <label className="font-semibold text-gray-900 dark:text-white cursor-pointer">Business Owner</label>
+                <p className="text-sm text-gray-500">For self-employed or business professionals.</p>
+              </div>
+            </div>
+            </div>
+
+            <div className="flex justify-between mt-4">
+              <button onClick={prevStep} className="border-gray-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
+                Back
+              </button>
+              <button onClick={nextStep} className="border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600">
+                Next
+              </button>
+            </div>
+          </motion.div>
+        )}
+      {step === 3 && formData.employmentType === "salaried" && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <input
+          type="text"
+          name="company"
+          placeholder="Company Name"
+          value={FormData.company}
+          onChange={handleChange}
+          className="w-full p-3 mb-3  border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
+          required 
+          />
+          
+        <input
+          type="text"
+          name="PositionInCompany"
+          placeholder="Designation In Company Name"
+          value={FormData.PositionInCompany}
+          onChange={handleChange}
+          className="w-full p-3 mb-3  border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
+          required 
+          />
+          
+        <input
+          type="number"
+          name="TotalEmiYouPayPerMonth"
+          placeholder="Share the Emi ammount you're paying currently (eg. ₹1500) "
+          value={FormData.TotalEmiYouPayPerMonth}
+          onChange={handleChange}
+          className="w-full p-3 mb-3  border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
+          required 
+          />
+          
+       
+        
+        <div className="flex justify-between mt-4">
+              <button onClick={prevStep} className="border-gray-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
+                Back
+              </button>
+              <button onClick={nextStep} className="border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600">
+                Next
+              </button>
+            </div>
+      </motion.div>
+      )}
+
+      {step === 3 && formData.employmentType === "business" && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+       <input
           type="text"
           name="businessName"
           placeholder="Business Name"
@@ -235,7 +356,7 @@ const MultiStepForm = () => {
        
         
         <div className="flex justify-between mt-4">
-              <button onClick={prevStep} className="border-gray-500 border-[0.6px] hover:text-white  dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
+              <button onClick={prevStep} className="border-gray-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
                 Back
               </button>
               <button onClick={nextStep} className="border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600">
@@ -244,7 +365,7 @@ const MultiStepForm = () => {
             </div>
       </motion.div>
       )}
-  {step === 3 && (
+  {step === 4 && (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Gross Annual Income</h2>
             {["Below ₹5 Lacs", "₹5 - ₹10 Lacs", "₹10 Lacs - ₹15 Lacs", "Above ₹15 Lacs"].map((income) => (
@@ -260,7 +381,7 @@ const MultiStepForm = () => {
               </div>
             ))}
             <div className="flex justify-between mt-4">
-            <button onClick={prevStep} className="border-gray-500 border-[0.6px] hover:text-white  dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
+              <button onClick={prevStep} className="border-gray-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
                 Back
               </button>
               <button onClick={nextStep} className="border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600">
@@ -270,7 +391,7 @@ const MultiStepForm = () => {
           </motion.div>
         )}
         {/* Step 6: Desired Loan Amount */}
-  {step === 4 && (
+  {step === 5 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Desired Loan Amount</h2>
               {[
@@ -286,19 +407,19 @@ const MultiStepForm = () => {
                 </div>
               ))}
                  <div className="flex justify-between mt-4">
-                 <button onClick={prevStep} className="border-gray-500 border-[0.6px] hover:text-white  dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
-                Back
-              </button>
-              <button onClick={nextStep} className="border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600">
-                Next
-              </button>
+                <button onClick={prevStep} className="border-gray-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
+                  Back
+                </button>
+                <button onClick={nextStep} className="border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600">
+                  Next
+                </button>
               </div>
             </motion.div>
           )}
   
 
 
-{step === 5 && (
+{step === 6 && (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
     <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
       Review & Submit
