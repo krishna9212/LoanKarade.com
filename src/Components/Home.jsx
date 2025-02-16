@@ -7,6 +7,7 @@ import Page4 from "./LandingPage4";
 import Page5 from "./LandingPage5";
 import LoanCategories from "./LoanCatagories";
 import About from "./AboutUs";
+import EMICalculator from "./EmiCalculator";
 
 const Home = () => {
   const pages = [<Page1 />, <Page2 />, <Page3 />, <Page4 />, <Page5 />];
@@ -23,6 +24,8 @@ const Home = () => {
 
       {/* About Section */}
       <About />
+
+      <EMICalculator></EMICalculator>
     </div>
   );
 };

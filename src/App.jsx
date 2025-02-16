@@ -43,7 +43,7 @@ function App() {
         <div className="hidden md:block">
           <Cursor />
         </div>
-
+      
         {/* Fixed Footer */}
         <footer>
           <Footer />

@@ -23,7 +23,7 @@ function Footer() {
     }, []);
 
     return (
-        <footer className="bg-white dark:bg-black">
+        <footer className="bg-white dark:bg-black pt-5 md:pt-10">
             <hr className=" border-gray-200  dark:border-gray-700 " />
             <div className="mx-auto w-full md:p-4 py-6 ">
                 <div className="md:flex md:justify-between">
