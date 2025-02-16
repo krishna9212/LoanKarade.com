@@ -5,7 +5,7 @@ import bank from './../assets/pic1.png';
 function Page1() {
   return (
     <div className="h-min-full w-full">
-      <div className="h-min-[100%] mt-20 md:-mt-0 md:-mb-10 md:pt-0 p-5 w-full bg-blue-100 dark:bg-gray-800 items-center flex md:flex-row">
+      <div className="h-min-[100%] mt-20 md:-mt-0 md:-mb-10 md:pt-0 p-5 w-full bg-blue-50 dark:bg-gray-800 items-center flex md:flex-row">
         <div className="left h-min-full  md:mb-10 md:-mt-10 md:h-full w-[72%] md:w-[50%] flex flex-col md:p-10 md:pt-40 justify-center text-black dark:text-white">
           <h1 className="text-[1.4rem] md:text-[4.2rem] whitespace-nowrap poppins-bold">
             Need a Loan?

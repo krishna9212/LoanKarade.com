@@ -20,7 +20,7 @@ const About = () => {
           {/* Right Section: Content */}
           <div className="w-full md:w-[50%]">
             <div className="text-center md:text-left">
-              <span className="block mb-4 text-lg font-semibold text-blue-700">
+              <span className="block mb-4 text-xl md:text-2xl font-semibold text-blue-700">
                 Why Choose Us
               </span>
               <h2 className="mb-5 text-2xl font-semibold text-dark dark:text-white sm:text-3xl lg:text-4xl">

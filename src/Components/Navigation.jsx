@@ -71,7 +71,10 @@ function Navigation() {
 
         <div className="flex items-center space-x-3 md:space-x-6 pt-2">
           <button
-            onClick={() => setDarkMode(!darkMode)}
+            onClick={() => {
+              setDarkMode(!darkMode)
+              window.location.reload();
+            }}
             className="px-[9px] py-[11.3px] rounded-md transition-all duration-1000 border-[0.4px] border-gray-400 dark:bg-gray-900 dark:hover:bg-transparent hover:bg-gray-200 flex items-center justify-center"
           >
             {darkMode ? (
