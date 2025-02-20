@@ -4,6 +4,7 @@ import "./App.css";
 import Navigation from "./Components/Navigation";
 import Cursor from "./Components/Cursor";
 import Home from "./Components/Home";
+import MicroLoan from "./Components/MicroLoan"
 import LoanCategories from "./Components/LoanCatagories";
 import PersonalLoan from "./Components/PersonalLoan";
 import BusinessLoan from "./Components/BusinessLoan";
@@ -13,6 +14,7 @@ import LoanAgainstProperty from "./Components/LoanAgainstProperty";
 import UsedCarLoan from "./Components/UsedCarLoan";
 import NotFound from "./Components/NotFound"; // Create this component for 404 handling
 import Footer from "./Components/Footer";
+import CarLoan from "./Components/CarLoan";
 
 function App() {
   return (
@@ -28,6 +30,7 @@ function App() {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/Micro-Loan" element={<MicroLoan></MicroLoan>} />
             <Route path="/loan-categories" element={<LoanCategories />} />
             <Route path="/personal-loan" element={<PersonalLoan />} />
             <Route path="/business-loan" element={<BusinessLoan />} />
@@ -35,6 +38,7 @@ function App() {
             <Route path="/home-loan" element={<HomeLoan />} />
             <Route path="/loan-against-property" element={<LoanAgainstProperty />} />
             <Route path="/used-car-loan" element={<UsedCarLoan />} />
+            <Route path="/car-loan" element={<CarLoan />} />
             <Route path="*" element={<NotFound />} /> {/* Handle unknown routes */}
           </Routes>
         </main>

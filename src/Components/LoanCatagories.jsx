@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
 import PersonalLoan from "./../assets/PersonalLoan.png";
-import MicroLoan from "./../assets/MicroLoan.png";
+import MicroLoan from "./../assets/Loann.png";
 import LoanImg from "./../assets/assets.png";
 import LoanImg2 from "./../assets/car-loan.png";
+import LoanImg6 from "./../assets/car-loan (1).png";
 import LoanImg3 from "./../assets/Loan3.png";
 import LoanImg4 from "./../assets/loan.png";
 import LoanImg5 from "./../assets/debit-card.png";
@@ -55,55 +56,72 @@ function LoanCategories() {
   };
 
   const categories = [
-    { 
-      id: 1, 
-      name: "Personal Loan", 
-      icon: PersonalLoan, 
-      summary: "Secure and hassle-free loans tailored to your needs. Backed by trusted Banks & NBFCs.", 
-      buttonName: "Check Eligibility", 
-      route: "/personal-loan" 
+    {
+      id: 0,
+      name: "Micro Loan",
+      icon: MicroLoan,
+      summary: "Quick loans under 50k to meet urgent needs.",
+      buttonName: "Get Instant Loan",
+      route: "/Micro-Loan",
     },
-    { 
-      id: 2, 
-      name: "Business Loan", 
-      icon: LoanImg3, 
-      summary: "Grow your business with confidence. Loans at low interest rates from reliable sources.", 
-      buttonName: "Check Eligibility", 
-      route: "/business-loan"
+    {
+      id: 1,
+      name: "Personal Loan",
+      icon: PersonalLoan,
+      summary: "Hassle-free loans tailored to your needs.",
+      buttonName: "Check Eligibility",
+      route: "/personal-loan",
     },
-    { 
-      id: 3, 
-      name: "Credit Card", 
-      icon: LoanImg5, 
-      summary: "Instant and secure cash solutions for your urgent needs. Your trust, our priority.", 
-      buttonName: "Get Instant Loan", 
-      route: "/Credit-Card" 
+    {
+      id: 2,
+      name: "Business Loan",
+      icon: LoanImg3,
+      summary: "Expand your business with low-interest loans.",
+      buttonName: "Check Eligibility",
+      route: "/business-loan",
     },
-    { 
-      id: 4, 
-      name: "Home Loan", 
-      icon: LoanImg4, 
-      summary: "Make your dream home a reality with the lowest interest rates and complete transparency.", 
-      buttonName: "Check Eligibility", 
-      route: "/home-loan" 
+    {
+      id: 3,
+      name: "Credit Card",
+      icon: LoanImg5,
+      summary: "Instant cash solutions for urgent expenses.",
+      buttonName: "Get Instant Loan",
+      route: "/Credit-Card",
     },
-    { 
-      id: 5, 
-      name: "Loan Against Property", 
-      icon: LoanImg, 
-      summary: "Unlock the value of your property with secured loans at competitive rates.", 
-      buttonName: "Know More", 
-      route: "/Loan-Against-Property" 
+    {
+      id: 4,
+      name: "Home Loan",
+      icon: LoanImg4,
+      summary: "Turn your dream home into reality.",
+      buttonName: "Check Eligibility",
+      route: "/home-loan",
     },
-    { 
-      id: 6, 
-      name: "Used Car Loan", 
-      icon: LoanImg2, 
-      summary: "Own your dream car with secure loans and the best offers tailored for you.", 
-      buttonName: "Apply Now", 
-      route: "/Used-Car-Loan" 
+    {
+      id: 5,
+      name: "Loan Against Property",
+      icon: LoanImg,
+      summary: "Secure loans with competitive rates.",
+      buttonName: "Know More",
+      route: "/Loan-Against-Property",
+    },
+    {
+      id: 6,
+      name: "Used Car Loan",
+      icon: LoanImg2,
+      summary: "Affordable loans for your dream car.",
+      buttonName: "Apply Now",
+      route: "/Used-Car-Loan",
+    },
+    {
+      id: 7,
+      name: "Car Loan",
+      icon: LoanImg6,
+      summary: "Own your car with tailored loan offers.",
+      buttonName: "Apply Now",
+      route: "/Car-Loan",
     },
   ];
+  
   
   return (
     <div className="h-min-screen w-full p-5 bg-white dark:bg-gray-900 overflow-hidden flex flex-col">
@@ -124,7 +142,7 @@ function LoanCategories() {
         </div>
 
         {/* Loan Category Grid */}
-        <div className="grid grid-cols-3 md:grid-cols-3 gap-5 w-full mt-6 bg-white dark:bg-gray-900">
+        <div className="grid grid-cols-3 md:grid-cols-4 gap-5 w-full mt-6 bg-white dark:bg-gray-900">
           {categories.map((category) => (
             <div
               key={category.id}
