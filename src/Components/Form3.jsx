@@ -185,7 +185,7 @@ const MultiStepForm = () => {
               placeholder="Full Name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full p-3 mb-3  border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
+              className="w-full p-3 mb-3  border dark:border-gray-500  border-gray-300 rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
               required 
               />
             <input
@@ -194,7 +194,7 @@ const MultiStepForm = () => {
               placeholder="Email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full p-3 mb-3 border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
+              className="w-full p-3 mb-3 border rounded dark:border-gray-500  border-gray-300 focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
             />
             <input
               type="tel"
@@ -204,13 +204,13 @@ const MultiStepForm = () => {
               maxLength={10}
               value={formData.phone}
               onChange={handleChange}
-              className="w-full p-3 mb-4 border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
+              className="w-full p-3 mb-4 border rounded dark:border-gray-500  border-gray-300 focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
             />
             <select
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className="w-full p-3 mb-4 border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
+                    className="w-full p-3 mb-4 border dark:border-gray-500  border-gray-300 rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
                   >
                     <option value="other" className="dark:text-gray-100 dark:bg-gray-700 p-2">Other</option>
                     <option value="male" className="dark:text-gray-100 dark:bg-gray-700 p-2">Male</option>
@@ -222,60 +222,102 @@ const MultiStepForm = () => {
               placeholder="Adress"
               value={formData.address}
               onChange={handleChange}
-              className="w-full p-3 mb-4 border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
+              className="w-full p-3 mb-4 border rounded dark:border-gray-500 border-gray-300 focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
             />
             <StateSelector></StateSelector>
             <CitySelector></CitySelector>
             
-            <button onClick={nextStep} className="w-full border-[0.2px] text-[1rem] border-blue-600 text-black dark:text-white py-2 rounded hover:bg-blue-700 transition-all duration-700">
+            <button onClick={nextStep} className="w-full border-[0.2px] text-[1rem] border-blue-300 dark:border-blue-500 text-black dark:text-white py-2 rounded hover:bg-blue-700 transition-all duration-700">
               Next
             </button>
           </motion.div>
         )}
 
         {/* Step 2: Employment Type */}
-        {step === 2 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Employment Type</h2>
-            <div className=" flex flex-col gap-2">
+{step === 2 && (
+  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+    <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
+      Employment Type
+    </h2>
+    <div className="flex flex-col gap-2">
+      <div
+        className={`flex items-start gap-2 p-3 border rounded cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition ${
+          formData.employmentType === "salaried"
+            ? "border-blue-300 dark:border-blue-500"
+            : "dark:border-gray-500 border-gray-300"
+        }`}
+        onClick={() => setFormData({ ...formData, employmentType: "salaried" })}
+      >
+        <input
+          type="radio"
+          name="employmentType"
+          className="mt-1 md:mt-[7px]"
+          value="salaried"
+          checked={formData.employmentType === "salaried"}
+          required
+          readOnly
+        />
+        <div>
+          <label className="font-semibold text-gray-900 dark:text-white cursor-pointer">
+            Salaried
+          </label>
+          <p className="text-sm text-gray-500">
+            For individuals receiving a fixed monthly salary.
+          </p>
+        </div>
+      </div>
 
-            <div
-              className={`flex  items-start justify-start   gap-2 p-3 border     rounded  cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition ${
-                formData.employmentType === "salaried" ? "border-blue-500" : ""
-              }`}
-              onClick={() => setFormData({ ...formData, employmentType: "salaried" })}
-              >
-              <input type="radio" name="employmentType" className="mt-1 md:mt-[7px]" value="salaried" checked={formData.employmentType === "salaried"} onChange={handleChange} required/>
-              <div>
-                <label className="font-semibold text-gray-900 dark:text-white cursor-pointer">Salaried</label>
-                <p className="text-sm text-gray-500 ">For individuals receiving a fixed monthly salary.</p>
-              </div>
-            </div>
+      <div
+        className={`flex items-start gap-2 p-3 border rounded cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition mt-2 ${
+          formData.employmentType === "business"
+            ? "border-blue-300 dark:border-blue-500"
+            : "dark:border-gray-500 border-gray-300"
+        }`}
+        onClick={() => setFormData({ ...formData, employmentType: "business" })}
+      >
+        <input
+          type="radio"
+          name="employmentType"
+          value="business"
+          className="mt-1 md:mt-[7px]"
+          checked={formData.employmentType === "business"}
+          required
+          readOnly
+        />
+        <div>
+          <label className="font-semibold text-gray-900 dark:text-white cursor-pointer">
+            Business Owner
+          </label>
+          <p className="text-sm text-gray-500">
+            For self-employed or business professionals.
+          </p>
+        </div>
+      </div>
+    </div>
 
-            <div
-              className={`flex items-start gap-2 p-3 border rounded cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition mt-2 ${
-                formData.employmentType === "business" ? "border-blue-500" : ""
-              }`}
-              onClick={() => setFormData({ ...formData, employmentType: "business" })}
-              >
-              <input type="radio" name="employmentType" value="business"className="mt-1 md:mt-[7px]" checked={formData.employmentType === "business"} onChange={handleChange} required/>
-              <div>
-                <label className="font-semibold text-gray-900 dark:text-white cursor-pointer">Business Owner</label>
-                <p className="text-sm text-gray-500">For self-employed or business professionals.</p>
-              </div>
-            </div>
-            </div>
+    <div className="flex justify-between mt-4">
+      <button
+        onClick={prevStep}
+        className=" border-[0.6px] dark:border-gray-500 border-gray-300 dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600"
+      >
+        Back
+      </button>
+      <button
+        onClick={() => {
+          if (!formData.employmentType) {
+            alert("❌ Please select an employment type.");
+            return;
+          }
+          nextStep();
+        }}
+        className="border-blue-300 dark:border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600"
+      >
+        Next
+      </button>
+    </div>
+  </motion.div>
+)}
 
-            <div className="flex justify-between mt-4">
-              <button onClick={prevStep} className="border-gray-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
-                Back
-              </button>
-              <button onClick={nextStep} className="border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600">
-                Next
-              </button>
-            </div>
-          </motion.div>
-        )}
       {step === 3 && formData.employmentType === "salaried" && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <input
@@ -284,7 +326,7 @@ const MultiStepForm = () => {
           placeholder="Company Name"
           value={FormData.company}
           onChange={handleChange}
-          className="w-full p-3 mb-3  border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
+          className="w-full p-3 mb-3 dark:border-gray-500 border-gray-300  border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
           required 
           />
           
@@ -294,7 +336,7 @@ const MultiStepForm = () => {
           placeholder="Designation In Company Name"
           value={FormData.PositionInCompany}
           onChange={handleChange}
-          className="w-full p-3 mb-3  border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
+          className="w-full p-3 mb-3 dark:border-gray-500 border-gray-300 border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
           required 
           />
           
@@ -304,17 +346,17 @@ const MultiStepForm = () => {
           placeholder="Share the Emi ammount you're paying currently (eg. ₹1500) "
           value={FormData.TotalEmiYouPayPerMonth}
           onChange={handleChange}
-          className="w-full p-3 mb-3  border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
+          className="w-full p-3 mb-3 dark:border-gray-500 border-gray-300 border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
           required 
           />
           
        
         
         <div className="flex justify-between mt-4">
-              <button onClick={prevStep} className="border-gray-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
+              <button onClick={prevStep} className=" border-[0.6px] dark:border-gray-500 border-gray-300 dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
                 Back
               </button>
-              <button onClick={nextStep} className="border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600">
+              <button onClick={nextStep} className="border-blue-300 dark:border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600">
                 Next
               </button>
             </div>
@@ -329,7 +371,7 @@ const MultiStepForm = () => {
           placeholder="Business Name"
           value={FormData.company}
           onChange={handleChange}
-          className="w-full p-3 mb-3  border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
+          className="w-full p-3 mb-3 dark:border-gray-500 border-gray-300  border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
           required 
           />
           
@@ -339,7 +381,7 @@ const MultiStepForm = () => {
           placeholder="Category of Business"
           value={FormData.CatagoryOfBusiness}
           onChange={handleChange}
-          className="w-full p-3 mb-3  border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
+          className="w-full p-3 mb-3 dark:border-gray-500 border-gray-300  border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
           required 
           />
           
@@ -349,17 +391,17 @@ const MultiStepForm = () => {
           placeholder="EMI amount you're paying currently (e.g., ₹1500)"
           value={FormData.TotalEmiYouPayPerMonth}
           onChange={handleChange}
-          className="w-full p-3 mb-3  border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
+          className="w-full p-3 mb-3 dark:border-gray-500 border-gray-300  border rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
           required 
           />
           
        
         
         <div className="flex justify-between mt-4">
-              <button onClick={prevStep} className="border-gray-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
+              <button onClick={prevStep} className="dark:border-gray-500 border-gray-300 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
                 Back
               </button>
-              <button onClick={nextStep} className="border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600">
+              <button onClick={nextStep} className="border-blue-300 dark:border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600">
                 Next
               </button>
             </div>
@@ -369,7 +411,7 @@ const MultiStepForm = () => {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Gross Annual Income</h2>
             {["Below ₹5 Lacs", "₹5 - ₹10 Lacs", "₹10 Lacs - ₹15 Lacs", "Above ₹15 Lacs"].map((income) => (
-              <div key={income} className={`p-4 border dark:text-white rounded cursor-pointer transition mt-2 ${formData.grossIncome === income ? "border-blue-500" : ""}`} onClick={() => setFormData({ ...formData, grossIncome: income })}>
+              <div key={income} className={`p-4 border dark:border-gray-500 border-gray-300 dark:text-white rounded cursor-pointer transition mt-2 ${formData.grossIncome === income ? "border-blue-500" : ""}`} onClick={() => setFormData({ ...formData, grossIncome: income })}>
                 <input type="radio" name="grossIncome" 
                 value={income} 
                 checked={formData.grossIncome === income} 
@@ -381,10 +423,10 @@ const MultiStepForm = () => {
               </div>
             ))}
             <div className="flex justify-between mt-4">
-              <button onClick={prevStep} className="border-gray-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
+              <button onClick={prevStep} className="dark:border-gray-500 border-gray-300 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
                 Back
               </button>
-              <button onClick={nextStep} className="border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600">
+              <button onClick={nextStep} className=" border-blue-300 dark:border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600">
                 Next
               </button>
             </div>
@@ -401,7 +443,7 @@ const MultiStepForm = () => {
     ].map((range) => (
       <div
         key={range}
-        className={`p-4 border dark:text-white rounded cursor-pointer transition mt-2 ${
+        className={`p-4 border dark:border-gray-500 border-gray-300 dark:text-white rounded cursor-pointer transition mt-2 ${
           formData.loanAmount === range ? "border-blue-500" : ""
         }`}
         onClick={() => setFormData({ ...formData, loanAmount: range })}
@@ -421,13 +463,13 @@ const MultiStepForm = () => {
     <div className="flex justify-between mt-4">
       <button
         onClick={prevStep}
-        className="border-gray-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600"
+        className="dark:border-gray-500 border-gray-300 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600"
       >
         Back
       </button>
       <button
         onClick={nextStep}
-        className="border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600"
+        className="border-blue-300 dark:border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600"
       >
         Next
       </button>
@@ -470,13 +512,13 @@ const MultiStepForm = () => {
     <div className="flex justify-between mt-4">
       <button 
         onClick={prevStep} 
-        className="border-gray-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600"
+        className="dark:border-gray-500 border-gray-300 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600"
       >
         Back
       </button>
       <button 
         onClick={submit} 
-        className="border-green-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-green-600"
+        className="border-green-300 dark:border-green-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-green-600"
       >
         Submit
       </button>

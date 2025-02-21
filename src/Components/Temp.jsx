@@ -54,9 +54,9 @@ const CitySelector = () => {
         value={inputValue}
         onChange={handleInputChange}
         placeholder="Search city..."
-        className="w-full p-3 border rounded bg-white dark:bg-gray-800 dark:text-white 
-        border-gray-700 dark:border-gray-200 focus:outline-none focus:ring-2 
-        focus:ring-blue-500 dark:focus:ring-blue-400"
+        className="w-full p-3 border border-gray-300 dark:border-gray-500 rounded bg-white dark:bg-gray-800 dark:text-white 
+          focus:outline-none focus:ring-1
+        focus:ring-blue-300 "
       />
 
       {/* Dropdown List */}
