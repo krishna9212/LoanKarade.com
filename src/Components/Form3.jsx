@@ -391,31 +391,50 @@ const MultiStepForm = () => {
           </motion.div>
         )}
         {/* Step 6: Desired Loan Amount */}
-  {step === 5 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Desired Loan Amount</h2>
-              {[
-                "Below ₹2 Lacs",
-                "₹2 - ₹5 Lacs",
-                "₹5 - ₹10 Lacs",
-                "₹10 - ₹20 Lacs",
-                "Above ₹20 Lacs",
-              ].map((range) => (
-                <div key={range} className={`p-4 border dark:text-white rounded cursor-pointer transition mt-2 ${formData.loanAmount === range ? "border-blue-500" : ""}`} onClick={() => setFormData({ ...formData, loanAmount: range })}>
-                  <input type="radio" name="loanAmount" value={range} checked={formData.loanAmount === range} onChange={handleChange} className="mr-2 " />
-                  {range}
-                </div>
-              ))}
-                 <div className="flex justify-between mt-4">
-                <button onClick={prevStep} className="border-gray-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600">
-                  Back
-                </button>
-                <button onClick={nextStep} className="border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600">
-                  Next
-                </button>
-              </div>
-            </motion.div>
-          )}
+        {step === 5 && (
+  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+    <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Select Loan Amount</h2>
+    {[
+      "Below ₹10K",
+      "₹10K - ₹25K",
+      "₹25K - ₹50K",
+    ].map((range) => (
+      <div
+        key={range}
+        className={`p-4 border dark:text-white rounded cursor-pointer transition mt-2 ${
+          formData.loanAmount === range ? "border-blue-500" : ""
+        }`}
+        onClick={() => setFormData({ ...formData, loanAmount: range })}
+      >
+        <input
+          type="radio"
+          name="loanAmount"
+          value={range}
+          checked={formData.loanAmount === range}
+          onChange={handleChange}
+          className="mr-2"
+        />
+        {range}
+      </div>
+    ))}
+
+    <div className="flex justify-between mt-4">
+      <button
+        onClick={prevStep}
+        className="border-gray-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-gray-600"
+      >
+        Back
+      </button>
+      <button
+        onClick={nextStep}
+        className="border-blue-500 border-[0.6px] dark:text-gray-200 text-black px-8 py-2 rounded transition-all duration-700 hover:bg-blue-600"
+      >
+        Next
+      </button>
+    </div>
+  </motion.div>
+)}
+
   
 
 
