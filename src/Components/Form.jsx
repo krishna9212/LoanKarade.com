@@ -130,7 +130,7 @@ const MultiStepForm = () => {
 
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center  md:mt-6 justify-start bg-blue-50 dark:bg-gray-900 p-6">
+    <div className="min-h-screen w-full flex flex-col items-center  md:mt-6 justify-start bg-blue-100 dark:bg-gray-900 p-6">
       {/* Progress Bar */}
       <div className="w-full max-w-md md:mt-10 mb-6">
         <div className="relative w-full bg-gray-300 h-[1px] rounded-full">

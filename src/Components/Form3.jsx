@@ -163,7 +163,7 @@ const MultiStepForm = () => {
 
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center md:mt-7 justify-start bg-blue-50 dark:bg-gray-900 p-6">
+    <div className="min-h-screen w-full flex flex-col items-center md:mt-7 justify-start bg-blue-100 dark:bg-gray-900 p-6">
       {/* Progress Bar */}
       <div className="w-full max-w-md md:mt-10 mb-6">
         <div className="relative w-full bg-gray-300 h-[1px] rounded-full">
@@ -436,11 +436,7 @@ const MultiStepForm = () => {
         {step === 5 && (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
     <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Select Loan Amount</h2>
-    {[
-      "Below ₹10K",
-      "₹10K - ₹25K",
-      "₹25K - ₹50K",
-    ].map((range) => (
+    {["Below ₹10k", "₹10k - ₹20k", "₹20k - ₹30k","₹30k - ₹40k", "Above ₹40k"].map((range) => (
       <div
         key={range}
         className={`p-4 border dark:border-gray-500 border-gray-300 dark:text-white rounded cursor-pointer transition mt-2 ${

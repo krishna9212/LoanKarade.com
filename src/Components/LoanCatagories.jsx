@@ -104,16 +104,9 @@ function LoanCategories() {
       buttonName: "Know More",
       route: "/Loan-Against-Property",
     },
+    
     {
       id: 6,
-      name: "Used Car Loan",
-      icon: LoanImg2,
-      summary: "Affordable loans for your dream car.",
-      buttonName: "Apply Now",
-      route: "/Used-Car-Loan",
-    },
-    {
-      id: 7,
       name: "Car Loan",
       icon: LoanImg6,
       summary: "Own your car with tailored loan offers.",
