@@ -1,8 +1,6 @@
 import React from "react";
 import SliderBanner from "./SliderBanner";
 import Page1 from "./Landingpage";
-import Page2 from "./LandingPage2";
-import Page3 from "./LandingPage3";
 import Page4 from "./LandingPage4";
 import Page5 from "./LandingPage5";
 import LoanCategories from "./LoanCatagories";
@@ -10,7 +8,7 @@ import About from "./AboutUs";
 import EMICalculator from "./EmiCalculator";
 
 const Home = () => {
-  const pages = [<Page1 />, <Page2 />, <Page3 />, <Page4 />, <Page5 />];
+  const pages = [<Page1 />, <Page4 />, <Page5 />];
 
   return (
     <div className="">

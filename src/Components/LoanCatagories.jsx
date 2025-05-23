@@ -128,7 +128,7 @@ function LoanCategories() {
       )}
 
       {/* Heading */}
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full" id="products">
         <div className="heading flex md:w-[12%] text-[0.8rem] md:text-[1rem] w-[25%] items-center gap-2 text-[#0290D0] poppins-bold">
         Our products 
           <div className="line h-[0.725px] md:h-[0.625px] flex-grow bg-[#0290D0]"></div>

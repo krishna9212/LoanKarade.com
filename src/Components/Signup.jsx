@@ -183,12 +183,12 @@ function Signup() {
       window.location.reload();
 
     } catch (error) {
-      setAlert({ message: error.message, type: "error" });
+      setAlert({ message: "Something went wrong during sign-in. Please reload the page and try again.", type: "error" });
     }
     setLoading(false); // stop loading
   };
   
-  
+
   
   return (
     <>
@@ -197,9 +197,9 @@ function Signup() {
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
         </div>
       ) : (
-        <div className="h-[100vh] w-full flex flex-col md:flex-row items-center justify-center bg-gray-50 shadow-black shadow-2xl dark:bg-gray-900">
+        <div className="h-[100vh]  w-full flex flex-col md:flex-row items-center justify-center bg-gray-50 shadow-black shadow-2xl dark:bg-gray-900">
           {alert && (
-            <div className="absolute top-5 w-full flex justify-center">
+            <div className="absolute top-5 z-50 w-full flex justify-center">
               <AlertMessage message={alert.message} type={alert.type} onClose={() => setAlert(null)} />
             </div>
           )}

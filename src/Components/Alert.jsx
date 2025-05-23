@@ -16,7 +16,7 @@ const AlertMessage = ({ message, type = "success", duration = 5000, onClose }) =
 
   return (
     <div
-      className={`fixed top-5 right-5 px-4 py-3 rounded-lg text-white shadow-md transition-all duration-300 ${
+      className={`fixed top-24 right-5 px-4 py-3 z-50 rounded-lg text-white shadow-md transition-all duration-300 ${
         type === "success" ? "bg-green-500" : "bg-red-500"
       }`}
     >
