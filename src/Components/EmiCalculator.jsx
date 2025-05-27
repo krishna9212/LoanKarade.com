@@ -1,218 +1,153 @@
 import React, { useState, useEffect } from "react";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip as RechartsTooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import { Slider, Typography, TextField } from "@mui/material";
 
 function EMICalculator() {
-  const [amount, setAmount] = useState(100000); // Default values
+  const [amount, setAmount] = useState(100000);
   const [interestRate, setInterestRate] = useState(10);
   const [tenure, setTenure] = useState(5);
   const [emi, setEmi] = useState(null);
   const [totalInterest, setTotalInterest] = useState(null);
-  const [editField, setEditField] = useState(null); // Track which field is being edited
+  const [editField, setEditField] = useState(null);
 
-  const COLORS = ["#4F46E5", "#14B8A6"]; // Modern color palette
-
-  // Automatically calculate EMI when values change
   useEffect(() => {
     const principal = parseFloat(amount);
-    const rate = parseFloat(interestRate) / 12 / 100; // Monthly interest rate
-    const months = parseInt(tenure) * 12; // Tenure in months
+    const rate = parseFloat(interestRate) / 12 / 100;
+    const months = parseInt(tenure) * 12;
 
     if (principal && rate && months) {
-      const emi =
+      const calculatedEmi =
         (principal * rate * Math.pow(1 + rate, months)) /
         (Math.pow(1 + rate, months) - 1);
+      const totalPayment = calculatedEmi * months;
+      const interest = totalPayment - principal;
 
-      const totalPayment = emi * months;
-      const totalInterest = totalPayment - principal;
-
-      setEmi(emi.toFixed(2));
-      setTotalInterest(totalInterest.toFixed(2));
+      setEmi(calculatedEmi.toFixed(2));
+      setTotalInterest(interest.toFixed(2));
     } else {
       setEmi(null);
       setTotalInterest(null);
     }
   }, [amount, interestRate, tenure]);
 
-  const data = [
-    { name: "Principal", value: parseFloat(amount) },
-    { name: "Interest", value: parseFloat(totalInterest) || 0 },
-  ];
+  const handleEditComplete = () => setEditField(null);
 
-  const handleEditComplete = () => {
-    setEditField(null); // Exit edit mode
-  };
+  const InputSection = ({ label, value, onChange, sliderProps, fieldKey, unit = "" }) => (
+    <div className="mb-6">
+      <Typography variant="subtitle1" className="mb-1 font-medium text-gray-800 dark:text-gray-200">
+        {label}
+      </Typography>
+      {editField === fieldKey ? (
+        <TextField
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+          onBlur={handleEditComplete}
+          autoFocus
+          type="number"
+          variant="outlined"
+          fullWidth
+          inputProps={{ style: { color: "blue" } }}
+        />
+      ) : (
+        <div
+          onClick={() => setEditField(fieldKey)}
+          className="text-center mt-2 text-lg cursor-pointer font-semibold text-gray-700 dark:text-white transition hover:underline"
+        >
+          {unit}{value.toLocaleString()}
+        </div>
+      )}
+      <Slider
+        value={value}
+        onChange={(e, val) => onChange(val)}
+        valueLabelDisplay="auto"
+        sx={{ "& .MuiSlider-thumb": { boxShadow: "0 0 8px rgba(79, 70, 229, 0.5)" } }}
+        {...sliderProps}
+      />
+    </div>
+  );
 
   return (
-    <>
-    <div className="flex flex-col-reverse  md:flex-row justify-center p-2 items-center md:items-start h-min-screen px-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
-      {/* Left Side - Controls */}
-      <div className="lg:w-1/2 w-full shadow-lg rounded-lg p-[27px] mb-6 lg:mb-0 lg:mr-6 bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
-  <h1 className="text-4xl font-extrabold text-center mb-6 bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text">
-    EMI Calculator
-  </h1>
-  <div className="mb-6">
-    <Typography variant="h6" className="mb-2 text-black dark:text-white">
-      Loan Amount (₹)
-    </Typography>
-    {editField === "amount" ? (
-      <TextField
-        value={amount}
-        onChange={(e) => setAmount(Number(e.target.value))}
-        onBlur={handleEditComplete}
-        autoFocus
-        type="number"
-        inputProps={{ style: { color: "blue" } }}
-        variant="outlined"
-        fullWidth
-      />
-    ) : (
-      <div
-        onClick={() => setEditField("amount")}
-        className="text-center mt-2 text-lg cursor-pointer text-black dark:text-white"
-      >
-        ₹{amount.toLocaleString()}
+    <div className="flex flex-col-reverse md:flex-row justify-center items-center md:items-start p-6 bg-gradient-to-br from-white via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all min-h-screen text-gray-900 dark:text-white">
+      {/* Left Panel */}
+      <div className="w-full md:w-1/2 lg:w-[45%] shadow-md rounded-xl bg-white dark:bg-gray-800 p-6 mb-8 md:mb-0 md:mr-6">
+        <h1 className="text-3xl font-bold text-center text-blue-600 dark:text-blue-400 mb-6">
+          EMI Calculator
+        </h1>
+
+        <InputSection
+          label="Loan Amount (₹)"
+          value={amount}
+          onChange={setAmount}
+          sliderProps={{ min: 1000, max: 500000, step: 10000 }}
+          fieldKey="amount"
+          unit="₹"
+        />
+
+        <InputSection
+          label="Interest Rate (%)"
+          value={interestRate}
+          onChange={setInterestRate}
+          sliderProps={{ min: 1, max: 20, step: 0.1 }}
+          fieldKey="interestRate"
+          unit=""
+        />
+
+        <InputSection
+          label="Tenure (Years)"
+          value={tenure}
+          onChange={setTenure}
+          sliderProps={{ min: 1, max: 30, step: 1 }}
+          fieldKey="tenure"
+          unit=""
+        />
       </div>
-    )}
-    <Slider
-      value={amount}
-      onChange={(e, val) => setAmount(val)}
-      min={1000}
-      max={500000}
-      step={10000}
-      valueLabelDisplay="auto"
-      sx={{
-        "& .MuiSlider-thumb": {
-          boxShadow: "0 0 8px rgba(79, 70, 229, 0.7)",
-        },
-      }}
-    />
-  </div>
 
-  <div className="mb-6">
-    <Typography variant="h6" className="mb-2 text-black dark:text-white">
-      Annual Interest Rate (%)
-    </Typography>
-    {editField === "interestRate" ? (
-      <TextField
-        value={interestRate}
-        onChange={(e) => setInterestRate(Number(e.target.value))}
-        onBlur={handleEditComplete}
-        autoFocus
-        type="number"
-        fullWidth
-        inputProps={{ style: { color: "blue" } }}
-        
-        variant="outlined"
-      />
-    ) : (
-      <div
-        onClick={() => setEditField("interestRate")}
-        className="text-center mt-2 text-lg cursor-pointer text-black dark:text-white"
-      >
-        {interestRate}%
-      </div>
-    )}
-    <Slider
-      value={interestRate}
-      onChange={(e, val) => setInterestRate(val)}
-      min={1}
-      max={20}
-      step={0.1}
-      valueLabelDisplay="auto"
-    />
-  </div>
-
-  <div className="mb-6">
-    <Typography variant="h6" className="mb-2 text-black dark:text-white">
-      Tenure (Years)
-    </Typography>
-    {editField === "tenure" ? (
-      <TextField
-        value={tenure}
-        onChange={(e) => setTenure(Number(e.target.value))}
-        onBlur={handleEditComplete}
-        autoFocus
-        type="number"
-        fullWidth
-        inputProps={{ style: { color: "blue" } }}
-        
-        variant="outlined"
-      />
-    ) : (
-      <div
-        onClick={() => setEditField("tenure")}
-        className="text-center mt-2 text-lg cursor-pointer text-black dark:text-white"
-      >
-        {tenure} Years
-      </div>
-    )}
-    <Slider
-      value={tenure}
-      onChange={(e, val) => setTenure(val)}
-      min={1}
-      max={30}
-      step={1}
-      valueLabelDisplay="auto"
-    />
-  </div>
-</div>
-
-
-      {/* Right Side - Pie Chart */}
-      <div className="lg:w-1/2 w-[100%] mb-5  md:mb-0 shadow-lg rounded-lg  md:p-9 flex flex-col items-center bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
-        <h2 className="text-4xl pt-2 font-extrabold text-center mb-6 bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text">
+      {/* Right Panel */}
+      <div className="w-full md:w-1/2 lg:w-[45%] shadow-md rounded-xl bg-white dark:bg-gray-800 p-6">
+        <h2 className="text-3xl font-bold text-center text-blue-600 dark:text-blue-400 mb-6">
           EMI Breakdown
         </h2>
+
         <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={data}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              innerRadius={50}
-              outerRadius={85}
-              fill="#8884d8"
-              label={({ name, percent }) =>
-                `${name}: ${(percent * 100).toFixed(0)}%`
-              }
-            >
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
+          <BarChart
+            data={[
+              {
+                name: "Breakdown",
+                Principal: parseFloat(amount),
+                Interest: parseFloat(totalInterest) || 0,
+              },
+            ]}
+          >
+            <XAxis dataKey="name" />
+            <YAxis />
+            <RechartsTooltip />
+            <Legend />
+            <Bar dataKey="Principal" fill="#6366F1" radius={[10, 10, 0, 0]} />
+            <Bar dataKey="Interest" fill="#14B8A6" radius={[10, 10, 0, 0]} />
+          </BarChart>
         </ResponsiveContainer>
-        <div className="text-center">
-          {emi && (
-            <>
-              <p className="text-lg">
-                <strong>EMI per month:</strong>{" "}
-                ₹{parseFloat(emi).toLocaleString("en-IN", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </p>
-              <p className="text-lg">
-                <strong>Total Interest Payable:</strong>{" "}
-                ₹{parseFloat(totalInterest).toLocaleString("en-IN", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </p>
-            </>
-          )}
-        </div>
+
+        {emi && (
+          <div className="mt-6 text-center space-y-2">
+            <p className="text-lg font-semibold">
+              Monthly EMI: <span className="text-blue-600 dark:text-blue-300">₹{parseFloat(emi).toLocaleString("en-IN")}</span>
+            </p>
+            <p className="text-lg font-semibold">
+              Total Interest Payable:{" "}
+              <span className="text-purple-600 dark:text-purple-300">₹{parseFloat(totalInterest).toLocaleString("en-IN")}</span>
+            </p>
+          </div>
+        )}
       </div>
     </div>
-    </>
-
   );
 }
 
