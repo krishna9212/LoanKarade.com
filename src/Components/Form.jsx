@@ -216,7 +216,7 @@ const MultiStepForm = () => {
         <input
           type="text"
           name="PositionInCompany"
-          placeholder="Designation In Company Name"
+          placeholder="Designation In Company"
           value={FormData.PositionInCompany}
           onChange={handleChange}
           className="w-full p-3 mb-3  border border-gray-300 dark:border-gray-500 rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
