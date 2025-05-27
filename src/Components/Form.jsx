@@ -226,7 +226,7 @@ const MultiStepForm = () => {
         <input
           type="number"
           name="TotalEmiYouPayPerMonth"
-          placeholder="Share the emi ammount you're paying currently (eg. ₹1500) "
+          placeholder="Share the emi amount you're paying currently (eg. ₹1500) "
           value={FormData.TotalEmiYouPayPerMonth}
           onChange={handleChange}
           className="w-full p-3 mb-3  border border-gray-300 dark:border-gray-500 rounded focus:ring-2 text-gray-700 dark:text-gray-200 focus:ring-blue-500"
