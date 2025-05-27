@@ -22,7 +22,7 @@ const Footer = () => {
 
   return (
     <footer className="bg-white dark:bg-black text-gray-100 dark:text-gray-300 py-8 px-6 md:px-12">
-      <div className="max-w-8xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
                         <Link to="/" className="w-full h-full flex items-center justify-center md:justify-start">
                             {theme === "light" ? (
                                 <img
