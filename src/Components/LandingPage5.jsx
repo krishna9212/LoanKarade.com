@@ -5,9 +5,9 @@ import bank from "/banner3.png"
 function Page5() {
   return (
     <div className='w-full h-min-screen '>
-            <div className=' flex  mt-20 md:mt-16 -mb-16 flex-row items-center bg-[#F8B708] dark:bg-gray-800 p-5 md:py-0 md:px-10'>
-                <div className="flex  flex-col justify-center text-black dark:text-white w-full md:w-1/2 pb-8 md:mt-6 mb-1  ">
-                    <h1 className='text-[1.4rem] md:text-[4.2rem] whitespace-nowrap poppins-bold'>Find Your Best Deal!</h1> 
+            <div className=' flex  mt-16 md:mt-16 -mb-16 flex-row items-center bg-[#F8B708] dark:bg-gray-800 p-5 md:py-0 md:px-10'>
+                <div className="flex  flex-col justify-center text-black dark:text-white w-full md:w-1/2 pb-8 md:mt- mb-1  ">
+                    <h1 className='text-[1.4rem] md:text-[4.2rem] whitespace-nowrap oswald poppins-bold'>Find Your Best Deal!</h1> 
                     <h1 className='md:text-[1.6rem] text-[0.6rem] poppins-semibold'>
                     Find the <span className='text-[#7408f8d3] tracking-wide'>perfect loan</span> without any hassle.
                         </h1>
@@ -21,7 +21,7 @@ function Page5() {
                        
                         </div>
                 </div>
-                <div className="w-full md:w-1/2 -mt-20   flex justify-center items-center md:-mt-10 -mr-1">
+                <div className="w-full md:w-1/2 -mt-20   p-4 md:p-8 md:ml-20 md:-mr-24 flex justify-center md:justify-end items-center md:-mt-10 -mr-12">
                   <img src={bank} 
                   alt="CreditGuidance"
                   loading="lazy"

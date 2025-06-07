@@ -8,7 +8,7 @@ function Page1() {
         
         {/* Left Content */}
         <div className="flex flex-col justify-center text-black dark:text-white w-full md:w-1/2 pb-8 ">
-          <h1 className="text-[1.4rem] md:text-[4.2rem] whitespace-nowrap poppins-bold">
+          <h1 className="text-[1.4rem] oswald md:text-[4.2rem] whitespace-nowrap poppins-bold">
             Need a Loan?
           </h1>
           <h1 className="md:text-[1.6rem] text-[0.6rem] poppins-semibold">

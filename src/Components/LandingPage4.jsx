@@ -11,11 +11,11 @@ function Page4() {
 
   return (
     <div className="w-full h-min-screen">
-      <div className="flex mt-16 -mb-16 flex-row items-center bg-[#AEF1FE] dark:bg-gray-800 p-5 md:py-0 md:px-10">
+      <div className="flex mt-16 -mb-12 flex-row items-center bg-[#AEF1FE] dark:bg-gray-800 p-5 md:py-0 md:px-10">
         
         {/* Left Section */}
-        <div className="flex flex-col justify-center text-black dark:text-white w-full md:w-1/2 pb-8 md:-mt-8 mt-1">
-          <h1 className="text-[1.4rem] md:text-[4.2rem] whitespace-nowrap poppins-bold">
+        <div className="flex flex-col justify-center text-black dark:text-white w-full md:w-1/2 pb-8 md:-mt- mt-1">
+          <h1 className="text-[1.4rem] oswald md:text-[4.2rem] whitespace-nowrap poppins-bold">
             New to Credit?
           </h1>
           <h2 className="md:text-[1.6rem] text-[0.6rem] poppins-semibold">
@@ -35,7 +35,7 @@ function Page4() {
         </div>
 
         {/* Right Section (Image) */}
-        <div className="w-full md:w-1/2 -mt-8 ml-5 flex justify-center items-center md:mt-0">
+        <div className="w-full md:w-1/2 -mt-10 ml-1 flex justify-center items-center md:mt-0">
           <img
             src={bank}
             alt="Credit Guidance"
